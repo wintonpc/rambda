@@ -19,5 +19,13 @@ module Rambda
       end
       a
     end
+
+    def to_s
+      Pretty.print(self)
+    end
+
+    def inspect
+      Pretty.print(self)
+    end
   end
 end

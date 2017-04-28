@@ -14,7 +14,7 @@ module Rambda
         end
         char_stream.each do |c|
           case c
-          when '(', ')', '[', ']'
+          when '(', ')', '[', ']', "'"
             flush.()
             emit.(c)
           when ' ', "\n"

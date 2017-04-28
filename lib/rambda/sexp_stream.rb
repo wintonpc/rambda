@@ -4,26 +4,30 @@ module Rambda
   module SexpStream
     def from(token_stream)
       Enumerator.new do |y|
-        ss = []
-
-        emit = proc do |x|
-          if ss.empty?
-            y << Cons.from_array(x)
-          else
-            ss.last.push(x)
+        begin
+          while true
+            read = lambda do
+              t = token_stream.next
+              case t
+              when '('
+                s = []
+                while true
+                  s << read.()
+                  if token_stream.peek == ')'
+                    token_stream.next
+                    break
+                  end
+                end
+                Cons.from_array(s)
+              when "'"
+                Cons.from_array([:quote, read.()])
+              else
+                read_value(t)
+              end
+            end
+            y << read.()
           end
-        end
-
-        token_stream.each do |t|
-          case t
-          when '(', '['
-            ss.push([])
-          when ')', ']'
-            sexp = ss.pop
-            emit.(sexp)
-          else
-            emit.(read_value(t))
-          end
+        rescue StopIteration
         end
       end
     end

@@ -27,6 +27,8 @@ module Rambda
         '#t'
       when FalseClass
         '#f'
+      when NilClass
+        "'()"
       end
     end
 
