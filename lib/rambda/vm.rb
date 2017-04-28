@@ -9,9 +9,18 @@ module Rambda
     def run(x, e)
       a = r = s = nil
       while x != [:halt]
-        if x[0] == :refer
+        case x[0]
+        when :refer
           _, var, x = *x
           a = e.look_up(var)
+        when :constant
+          _, val, x = *x
+          a = val
+        when :assign
+          _, var, x = *x
+          e.set(var, a)
+        else
+          raise "unexpected instruction: #{x}"
         end
       end
       a

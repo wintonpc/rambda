@@ -1,6 +1,14 @@
 module Rambda
   class Env
-    class NoSuchVar < StandardError; end
+    class NoSuchVar < StandardError
+      def initialize(var_name)
+        @var_name = var_name
+      end
+
+      def to_s
+        @var_name
+      end
+    end
 
     def initialize(parent=nil)
       @env = {}
@@ -22,7 +30,7 @@ module Rambda
         if @parent
           @parent.look_up(var)
         else
-          raise NoSuchVar
+          raise NoSuchVar.new(var)
         end
       end
     end
