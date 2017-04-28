@@ -11,6 +11,10 @@ module Rambda
         when :quote
           obj = Cons.to_array(x.t)[0]
           [:constant, obj, nxt]
+        when :lambda
+          vars = Cons.to_array(x.t.h)
+          body = x.t.t.h
+          [:close, vars, compile(body, [:return]), x, nxt]
         else
           raise "unexpected car: #{x.h}"
         end

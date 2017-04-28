@@ -1,6 +1,8 @@
 module Rambda
   class Env
     class NoSuchVar < StandardError
+      attr_accessor :var_name
+
       def initialize(var_name)
         @var_name = var_name
       end

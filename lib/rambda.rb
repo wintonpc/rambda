@@ -7,6 +7,7 @@ require 'rambda/pretty'
 require 'rambda/compiler'
 require 'rambda/vm'
 require 'rambda/env'
+require 'rambda/closure'
 
 module Rambda
   # Your code goes here...

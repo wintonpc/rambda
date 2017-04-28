@@ -29,6 +29,13 @@ module Rambda
         '#f'
       when NilClass
         "'()"
+      when Closure
+        text = Pretty.print(x.lambda_exp, true)
+        if text.size < 100
+          "#<procedure #{text}>"
+        else
+          '#<procedure>'
+        end
       end
     end
 

@@ -1,3 +1,5 @@
+require 'rambda/closure'
+
 module Rambda
   module VM
     def eval(x, env)
@@ -19,6 +21,9 @@ module Rambda
         when :assign
           _, var, x = *x
           e.set(var, a)
+        when :close
+          _, vars, body, lambda_exp, x = *x
+          a = Closure.new(body, e, vars, lambda_exp)
         else
           raise "unexpected instruction: #{x}"
         end

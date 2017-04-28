@@ -6,9 +6,14 @@ module Rambda
       cs = CharStream.from(STDIN)
       ts = TokenStream.from(cs)
       ss = SexpStream.from(ts)
+      env = Env.new
       print 'λ> '
       ss.each do |exp|
-        puts Pretty.print(exp)
+        begin
+          puts Pretty.print(VM.eval(Compiler.compile(exp), env))
+        rescue Env::NoSuchVar => e
+          puts "!! Variable #{e.var_name} is not bound"
+        end
         print 'λ> '
       end
     end

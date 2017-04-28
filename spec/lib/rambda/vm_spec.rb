@@ -19,9 +19,17 @@ module Rambda
       expect(eval('(set! a 44) a', Env.new)).to eql 44
     end
 
-    def eval(code, env)
-      VM.eval(compile(code), env)
+    it 'close' do
+      expect(eval('(lambda (x) x)', Env.new)).to be_a Closure
     end
+
+#     it 'lambda test' do
+#       code = <<EOD
+# (set! p (lambda (x) x))
+#
+# EOD
+#       expect(eval('(lambda (x) x)', Env.new)).to be_a Closure
+#     end
 
     def eval(code, env)
       cs = CharStream.from(StringIO.new(code))
