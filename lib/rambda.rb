@@ -17,3 +17,10 @@ end
 def repl
   Rambda::Repl.run
 end
+
+class Proc
+  def inspect
+    fn, line = source_location
+    "#<Proc@#{File.basename(fn)}:#{line}>"
+  end
+end

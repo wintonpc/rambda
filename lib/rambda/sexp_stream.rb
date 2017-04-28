@@ -12,11 +12,11 @@ module Rambda
               when '('
                 s = []
                 while true
-                  s << read.()
                   if token_stream.peek == ')'
                     token_stream.next
                     break
                   end
+                  s << read.()
                 end
                 Cons.from_array(s)
               when "'"

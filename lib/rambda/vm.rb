@@ -2,19 +2,21 @@ require 'rambda/closure'
 
 module Rambda
   module VM
-    def eval(x, env)
-      run(x, env)
+    def eval(x, env, persister: proc{})
+      run(nil, x, env, [], [], persister)
+    end
+
+    def resume(state, persister: proc{})
+      puts 'VM.resume'
+      run(state[:a], state[:x], state[:e], state[:r], state[:s], persister)
     end
 
     private
 
-    def run(x, e)
-      a = nil # accumulator
-      r = [] # argument "rib"
-      s = [] # stack
+    def run(a, x, e, r, s, persister)
       while x != [:halt]
-        # to_s
-        # puts "AXER: #{a} #{x} #{e} #{r}"
+        persister.call({a: a, x: x, e: e, r: r, s: s})
+        # puts "AXERS: #{a.inspect} #{x.inspect} #{e.inspect} #{r.inspect} #{s.inspect}"
         case x[0]
         when :refer
           _, var, x = *x
@@ -40,12 +42,12 @@ module Rambda
           r = []
         when :apply
           if a.is_a?(Closure)
-          x = a.body
-          if a.formals.size != r.size
-            raise "procedure of arguments #{a.formals} was passed the wrong number of arguments: #{r}"
-          end
-          e = Env.new(a.env, a.formals.zip(r).to_h)
-          r = []
+            x = a.body
+            if a.formals.size != r.size
+              raise "procedure of arguments #{a.formals} was passed the wrong number of arguments: #{r}"
+            end
+            e = Env.new(a.env, a.formals.zip(r).to_h)
+            r = []
           elsif a.is_a?(Proc)
             a = a.call(*r)
             x = [:return]

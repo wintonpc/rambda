@@ -1,5 +1,6 @@
 require 'rspec'
 require 'rambda'
+require 'oj'
 
 module Rambda
   describe VM do
@@ -37,45 +38,78 @@ EOD
     end
 
     it 'lambda cons' do
+      env = Env.new
       code = <<EOD
 (set! cons (lambda (h t) (lambda (x) (if x h t))))
 (set! car (lambda (c) (c #t)))
 (set! cdr (lambda (c) (c #f)))
 EOD
-      env = Env.new
       eval(code, env)
       expect(eval('(car (cons 1 2))', env)).to eql 1
       expect(eval('(cdr (cons 1 2))', env)).to eql 2
     end
 
     it 'primitives' do
-      env = Env.new.import(BuiltIn.primitives)
+      env = Env.new
       expect(eval('(+ 1 2)', env)).to eql 3
       expect(eval('(* 3 7)', env)).to eql 21
       expect(eval('(* 4 (+ 1 (* 3 7)))', env)).to eql 88
     end
 
+    it 'begin' do
+      code = <<EOD
+(+ (begin
+     (set! a 1)
+     (set! b 2)
+     (+ a b))
+   90)
+EOD
+      expect(eval(code)).to eql 93
+    end
+
     it 'ruby-eval' do
-      env = Env.new.import(BuiltIn.primitives)
-      expect(eval('(ruby-eval "$LOAD_PATH")', env)).to be_a Array
+      expect(eval('(ruby-eval "$LOAD_PATH")')).to be_a Array
     end
 
     it 'ruby method sending' do
-      env = Env.new.import(BuiltIn.primitives)
       code = <<EOD
 (set! lp (ruby-eval "$LOAD_PATH"))
 (.last lp)
 EOD
-      expect(eval(code, env)).to be_a String
+      expect(eval(code)).to be_a String
     end
 
-    def eval(code, env=Env.new)
+    it 'persists state intermittently' do
+      code = <<EOD
+(begin
+  (set! a 1)
+  (set! b (+ a 2))
+  (set! c (+ b 3))
+  (ruby-eval "if STDIN.readline.start_with?('x'); raise 'oops'; end")
+  (.call (ruby-eval "->(c) { puts 'c = ' + c.to_s }") c))
+EOD
+
+      log = []
+      persister = proc { |s| log << s }
+      begin
+        eval(code, Env.new, persister)
+      rescue => e
+        puts e
+        last_state = log.last
+        z = VM.resume(last_state)
+        puts "resume returned #{z.inspect}"
+      end
+      # log
+      # system("echo '#{Oj.dump(log.last, mode: :object, circular: true)}' | python -mjson.tool")
+    end
+
+    def eval(code, env=Env.new, persister=proc{})
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)
       ss = SexpStream.from(ts)
       result = nil
       ss.each do |exp|
-        result = VM.eval(Compiler.compile(exp), env)
+        result = VM.eval(Compiler.compile(exp), env, persister: persister)
       end
       result
     end

@@ -15,6 +15,11 @@ module Rambda
           vars, body = *Cons.to_array1(x.t)
           vars = Cons.to_array(vars)
           [:close, vars, compile(body, [:return]), x, nxt]
+        when :begin
+          exprs = Cons.to_array1(x.t)
+          exprs.reverse.reduce(nxt) do |c, expr|
+            compile(expr, c)
+          end
         when :if
           test, con, alt = *Cons.to_array1(x.t)
           conc = compile(con, nxt)

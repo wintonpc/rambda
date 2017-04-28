@@ -16,28 +16,32 @@ module Rambda
     end
 
     it 'reads integers' do
-      verify_reads('42',  [42])
+      verify_reads('42', [42])
     end
 
     it 'reads floats' do
-      verify_reads('42.4',  [42.4])
+      verify_reads('42.4', [42.4])
     end
 
     it 'reads strings' do
-      verify_reads('"foo"',  ['foo'])
+      verify_reads('"foo"', ['foo'])
     end
 
     it 'reads booleans' do
-      verify_reads('#t',  [true])
-      verify_reads('#f',  [false])
+      verify_reads('#t', [true])
+      verify_reads('#f', [false])
     end
 
     it 'reads multiple expressions' do
-      verify_reads('a b',  [:a, :b])
+      verify_reads('a b', [:a, :b])
     end
 
     it 'reads sexps' do
-      verify_reads('(a b)',  [Cons.from_array([:a, :b])])
+      verify_reads('(a b)', [Cons.from_array([:a, :b])])
+    end
+
+    it 'reads nil' do
+      verify_reads('()', [nil])
     end
 
     it 'reads nested sexps' do

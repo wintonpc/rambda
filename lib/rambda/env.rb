@@ -17,6 +17,14 @@ module Rambda
       @parent = parent
     end
 
+    def hash
+      @env
+    end
+
+    def parent
+      @parent
+    end
+
     def self.from(hash)
       e = Env.new
       hash.each_pair { |k, v| e.set(k, v)}
@@ -36,10 +44,26 @@ module Rambda
       @env.fetch(var) do
         if @parent
           @parent.look_up(var)
+        elsif self != Env.built_in
+          Env.built_in.look_up(var)
         else
           raise NoSuchVar.new(var)
         end
       end
+    end
+
+    def self.built_in
+      @built_in ||= Env.new(nil, BuiltIn.primitives)
+    end
+
+    def inspect
+      e = self
+      h = {}
+      while e
+        h = e.hash.merge(h)
+        e = e.parent
+      end
+      "#<Env #{h.map { |(k, v)| "#{k}=#{v.inspect}"}.join(' ')}>"
     end
   end
 end
