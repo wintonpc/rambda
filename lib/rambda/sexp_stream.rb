@@ -6,11 +6,11 @@ module Rambda
       Enumerator.new do |y|
         ss = []
 
-        emit = proc do |sexp|
+        emit = proc do |x|
           if ss.empty?
-            y << sexp
+            y << Cons.from_array(x)
           else
-            ss.last.push(sexp)
+            ss.last.push(x)
           end
         end
 
