@@ -22,7 +22,7 @@ module Rambda
           compile(test, [:test, conc, altc])
         else
           p = x.h
-          args = Cons.to_array(x.t)
+          args = Cons.to_array1(x.t)
           c = args.reduce(compile(p, [:apply])) do |c, arg|
             compile(arg, [:argument, c])
           end

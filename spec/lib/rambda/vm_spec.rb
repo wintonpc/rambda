@@ -35,14 +35,18 @@ module Rambda
 EOD
       expect(eval(code, Env.new)).to eql 42
     end
-#
-#     it 'lambda cons' do
-#       code = <<EOD
-# (set! cons (lambda (h t) (lambda ()))
-# (p 42)
-# EOD
-#       expect(eval(code, Env.new)).to eql 42
-#     end
+
+    it 'lambda cons' do
+      code = <<EOD
+(set! cons (lambda (h t) (lambda (x) (if x h t))))
+(set! car (lambda (c) (c #t)))
+(set! cdr (lambda (c) (c #f)))
+EOD
+      env = Env.new
+      eval(code, env)
+      expect(eval('(car (cons 1 2))', env)).to eql 1
+      expect(eval('(cdr (cons 1 2))', env)).to eql 2
+    end
 
     def eval(code, env=Env.new)
       cs = CharStream.from(StringIO.new(code))

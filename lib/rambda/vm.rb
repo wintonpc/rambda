@@ -13,7 +13,8 @@ module Rambda
       r = [] # argument "rib"
       s = [] # stack
       while x != [:halt]
-        to_s
+        # to_s
+        # puts "AXER: #{a} #{x} #{e} #{r}"
         case x[0]
         when :refer
           _, var, x = *x
@@ -35,11 +36,14 @@ module Rambda
           r.unshift(a)
         when :frame
           _, ret, x = *x
-          r = []
           s = [ret, e, r, s]
+          r = []
         when :apply
           x = a.body
-          e = Env.new(e, a.formals.zip(r).to_h)
+          if a.formals.size != r.size
+            raise "procedure of arguments #{a.formals} was passed the wrong number of arguments: #{r}"
+          end
+          e = Env.new(a.env, a.formals.zip(r).to_h)
           r = []
         when :return
           x, e, r, s = *s
