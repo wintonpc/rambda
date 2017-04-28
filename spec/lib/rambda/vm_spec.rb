@@ -23,12 +23,20 @@ module Rambda
       expect(eval('(lambda (x) x)', Env.new)).to be_a Closure
     end
 
-#     it 'lambda test' do
-#       code = <<EOD
-# (set! p (lambda (x) x))
+    it 'lambda test' do
+      code = <<EOD
+(set! p (lambda (x) x))
+(p 42)
+EOD
+      expect(eval(code, Env.new)).to eql 42
+    end
 #
+#     it 'lambda cons' do
+#       code = <<EOD
+# (set! cons (lambda (h t) (lambda ()))
+# (p 42)
 # EOD
-#       expect(eval('(lambda (x) x)', Env.new)).to be_a Closure
+#       expect(eval(code, Env.new)).to eql 42
 #     end
 
     def eval(code, env)

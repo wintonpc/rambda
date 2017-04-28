@@ -9,8 +9,11 @@ module Rambda
     private
 
     def run(x, e)
-      a = r = s = nil
+      a = nil # accumulator
+      r = [] # argument "rib"
+      s = [] # stack
       while x != [:halt]
+        to_s
         case x[0]
         when :refer
           _, var, x = *x
@@ -24,6 +27,19 @@ module Rambda
         when :close
           _, vars, body, lambda_exp, x = *x
           a = Closure.new(body, e, vars, lambda_exp)
+        when :argument
+          _, x = *x
+          r.unshift(a)
+        when :frame
+          _, ret, x = *x
+          r = []
+          s = [ret, e, r, s]
+        when :apply
+          x = a.body
+          e = Env.new(e, a.formals.zip(r).to_h)
+          r = []
+        when :return
+          x, e, r, s = *s
         else
           raise "unexpected instruction: #{x}"
         end

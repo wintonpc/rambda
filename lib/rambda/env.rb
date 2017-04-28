@@ -12,8 +12,8 @@ module Rambda
       end
     end
 
-    def initialize(parent=nil)
-      @env = {}
+    def initialize(parent=nil, env={})
+      @env = env
       @parent = parent
     end
 
