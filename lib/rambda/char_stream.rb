@@ -5,11 +5,11 @@ module Rambda
         begin
           while true
             c = io.readchar
-            puts "CharStream read #{c.inspect}"
+            # puts "CharStream read #{c.inspect}"
             y << c
           end
         rescue EOFError
-          puts 'CharStream got EOFError'
+          # puts 'CharStream got EOFError'
         end
       end
     end
