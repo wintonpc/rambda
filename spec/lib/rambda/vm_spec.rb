@@ -11,9 +11,9 @@ module Rambda
       expect(eval('33', Env.new)).to eql 33
     end
 
-    # it 'quote' do
-    #   expect(eval("'a", Env.new)).to eql :a
-    # end
+    it 'quote' do
+      expect(eval("'a", Env.new)).to eql :a
+    end
 
     it 'assign' do
       expect(eval('(set! a 44) a', Env.new)).to eql 44
