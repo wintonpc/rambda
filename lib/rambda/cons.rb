@@ -20,6 +20,16 @@ module Rambda
       a
     end
 
+    def self.to_array1(x)
+      return x unless x.is_a?(Cons)
+      a = []
+      while x != nil
+        a << x.h
+        x = x.t
+      end
+      a
+    end
+
     def to_s
       Pretty.print(self)
     end

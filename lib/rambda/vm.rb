@@ -24,6 +24,9 @@ module Rambda
         when :assign
           _, var, x = *x
           e.set(var, a)
+        when :test
+          _, con, alt = *x
+          x = a ? con : alt
         when :close
           _, vars, body, lambda_exp, x = *x
           a = Closure.new(body, e, vars, lambda_exp)
