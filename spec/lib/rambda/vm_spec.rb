@@ -48,6 +48,13 @@ EOD
       expect(eval('(cdr (cons 1 2))', env)).to eql 2
     end
 
+    it 'primitives' do
+      env = Env.new.import(BuiltIn.primitives)
+      expect(eval('(+ 1 2)', env)).to eql 3
+      expect(eval('(* 3 7)', env)).to eql 21
+      expect(eval('(* 4 (+ 1 (* 3 7)))', env)).to eql 88
+    end
+
     def eval(code, env=Env.new)
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)

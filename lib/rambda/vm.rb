@@ -39,12 +39,19 @@ module Rambda
           s = [ret, e, r, s]
           r = []
         when :apply
+          if a.is_a?(Closure)
           x = a.body
           if a.formals.size != r.size
             raise "procedure of arguments #{a.formals} was passed the wrong number of arguments: #{r}"
           end
           e = Env.new(a.env, a.formals.zip(r).to_h)
           r = []
+          elsif a.is_a?(Proc)
+            a = a.call(*r)
+            x = [:return]
+          else
+            raise "I don't know how to apply a #{a.class}: #{a.inspect}"
+          end
         when :return
           x, e, r, s = *s
         else

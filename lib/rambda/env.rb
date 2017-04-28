@@ -23,6 +23,11 @@ module Rambda
       e
     end
 
+    def import(hash)
+      @env.merge!(hash)
+      self
+    end
+
     def set(var, val)
       @env[var] = val
     end
