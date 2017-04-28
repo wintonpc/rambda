@@ -4,6 +4,9 @@ require 'rambda/token_stream'
 require 'rambda/sexp_stream'
 require 'rambda/repl'
 require 'rambda/pretty'
+require 'rambda/compiler'
+require 'rambda/vm'
+require 'rambda/env'
 
 module Rambda
   # Your code goes here...
