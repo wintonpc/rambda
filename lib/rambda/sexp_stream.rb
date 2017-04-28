@@ -22,10 +22,30 @@ module Rambda
             sexp = ss.pop
             emit.(sexp)
           else
-            emit.(t.to_sym)
+            emit.(read_value(t))
           end
         end
       end
+    end
+
+    def read_value(x)
+      i = try_parse_int(x)
+      return i if i
+      f = try_parse_float(x)
+      return f if f
+      x.to_sym
+    end
+
+    def try_parse_int(x)
+      Integer(x)
+    rescue ArgumentError
+      nil
+    end
+
+    def try_parse_float(x)
+      Float(x)
+    rescue ArgumentError
+      nil
     end
 
     extend self

@@ -19,19 +19,5 @@ module Rambda
       end
       a
     end
-
-    def inspect
-      to_pretty_sexp(Cons.to_array(self))
-    end
-
-    def to_pretty_sexp(x)
-      case x
-      when Array
-        "(#{x.map(&method(:to_pretty_sexp)).join(' ')})"
-      else
-        x.to_s
-      end
-    end
-
   end
 end
