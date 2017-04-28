@@ -21,9 +21,17 @@ module Rambda
           altc = compile(alt, nxt)
           compile(test, [:test, conc, altc])
         else
-          p = x.h
+          application =
+              if x.h.is_a?(Symbol) && x.h.to_s.start_with?('.')
+                method = x.h.to_s[1..-1]
+                p = lambda { |receiver, *args| receiver.send(method, *args) }
+                [:constant, p, [:apply]]
+              else
+                compile(x.h, [:apply])
+              end
+
           args = Cons.to_array1(x.t)
-          c = args.reduce(compile(p, [:apply])) do |c, arg|
+          c = args.reduce(application) do |c, arg|
             compile(arg, [:argument, c])
           end
           if nxt == [:return]

@@ -55,6 +55,20 @@ EOD
       expect(eval('(* 4 (+ 1 (* 3 7)))', env)).to eql 88
     end
 
+    it 'ruby-eval' do
+      env = Env.new.import(BuiltIn.primitives)
+      expect(eval('(ruby-eval "$LOAD_PATH")', env)).to be_a Array
+    end
+
+    it 'ruby method sending' do
+      env = Env.new.import(BuiltIn.primitives)
+      code = <<EOD
+(set! lp (ruby-eval "$LOAD_PATH"))
+(.last lp)
+EOD
+      expect(eval(code, env)).to be_a String
+    end
+
     def eval(code, env=Env.new)
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)

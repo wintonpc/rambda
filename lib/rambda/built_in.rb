@@ -4,6 +4,8 @@ module Rambda
       @primitives ||= {
           '+': lambda { |a, b| a + b },
           '*': lambda { |a, b| a * b },
+
+          'ruby-eval': lambda { |str| Kernel.eval(str) }
       }
     end
 
