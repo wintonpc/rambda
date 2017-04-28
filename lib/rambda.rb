@@ -8,3 +8,7 @@ require 'rambda/pretty'
 module Rambda
   # Your code goes here...
 end
+
+def repl
+  Rambda::Repl.run
+end

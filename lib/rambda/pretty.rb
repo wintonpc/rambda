@@ -21,6 +21,12 @@ module Rambda
         "#{quoted ? '' : "'"}#{x.to_s}"
       when Numeric
         x.to_s
+      when String
+        x.inspect
+      when TrueClass
+        '#t'
+      when FalseClass
+        '#f'
       end
     end
 
