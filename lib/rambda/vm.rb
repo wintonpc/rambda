@@ -3,22 +3,21 @@ require 'rambda/compiler'
 
 module Rambda
   module VM
-    def eval(x, env, persister: proc{})
-      run(nil, x, env, [], [], persister)
+    def eval(x, env, observer: nil)
+      run(nil, x, env, [], [], observer)
     end
 
-    def apply(p, env, args, persister: proc{})
-      run(p, Compiler.compile(Cons.from_array1([p, *args])), env, args, [], persister)
+    def apply(p, env, args, observer: nil)
+      run(p, Compiler.compile(Cons.from_array1([p, *args])), env, args, [], observer)
     end
 
-    def resume(state, persister: proc{})
-      puts 'VM.resume'
-      run(state[:a], state[:x], state[:e], state[:r], state[:s], persister)
+    def resume(state, observer: nil)
+      run(state[:a], state[:x], state[:e], state[:r], state[:s], observer)
     end
 
     private
 
-    def run(a, x, e, r, s, persister)
+    def run(a, x, e, r, s, observer)
       while x != [:halt]
         # puts "AXERS: #{a.inspect} #{x.inspect} #{e.inspect} #{r.inspect} #{s.inspect}"
         case x[0]
@@ -65,11 +64,12 @@ module Rambda
           end
         when :return
           x, e, r, s = *s
-          persister.call({a: a, x: x, e: e, r: r, s: s})
+          observer.returned({a: a, x: x, e: e, r: r, s: s}) if observer
         else
           raise "unexpected instruction: #{x}"
         end
       end
+      observer.halted if observer
       a
     end
 

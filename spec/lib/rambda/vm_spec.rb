@@ -111,9 +111,13 @@ EOD
 EOD
 
       log = []
-      persister = proc { |s| log << s }
+      observer = Class.new do
+        define_method(:returned) do |state|
+          log << state
+        end
+      end.new
       begin
-        eval(code, Env.new, persister)
+        eval(code, Env.new, observer)
       rescue => e
         puts e
         last_state = log.last
@@ -124,13 +128,13 @@ EOD
       end
     end
 
-    def eval(code, env=Env.new, persister=proc{})
+    def eval(code, env=Env.new, observer=nil)
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)
       ss = SexpStream.from(ts)
       result = nil
       ss.each do |exp|
-        result = VM.eval(Compiler.compile(exp), env, persister: persister)
+        result = VM.eval(Compiler.compile(exp), env, observer: observer)
       end
       result
     end

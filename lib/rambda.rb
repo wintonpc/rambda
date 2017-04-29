@@ -11,19 +11,19 @@ require 'rambda/closure'
 require 'rambda/built_in'
 
 module Rambda
-  def eval(code, env=Env.new)
+  def eval(code, env=Env.new, observer: nil)
     cs = CharStream.from(StringIO.new(code))
     ts = TokenStream.from(cs)
     ss = SexpStream.from(ts)
     result = nil
     ss.each do |exp|
-      result = VM.eval(Compiler.compile(exp), env)
+      result = VM.eval(Compiler.compile(exp), env, observer: observer)
     end
     result
   end
 
-  def apply(p, *args, env)
-    VM.apply(p, env, args)
+  def apply(p, *args, env, observer: nil)
+    VM.apply(p, env, args, observer: observer)
   end
 
   extend self

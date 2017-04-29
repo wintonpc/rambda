@@ -11,7 +11,6 @@ module Rambda
     end
 
     def self.from_array1(x)
-      return x unless x.is_a?(Array)
       c = nil
       x.reverse_each do |v|
         c = Cons.new(v, c)

@@ -7,8 +7,12 @@ module Rambda
         @var_name = var_name
       end
 
+      def message
+        "NoSuchVar: #{to_s}"
+      end
+
       def to_s
-        @var_name
+        @var_name.to_s
       end
     end
 
@@ -62,7 +66,11 @@ module Rambda
     end
 
     def self.built_in
-      @built_in ||= Env.new(nil, BuiltIn.primitives)
+      @built_in ||= begin
+        env = Env.new(nil, BuiltIn.primitives)
+        BuiltIn.register_stdlib(env)
+        env
+      end
     end
 
     def inspect

@@ -3,20 +3,24 @@ require 'stringio'
 
 module Rambda
   module Pretty
-    def print(x, quoted=false)
+    def print(x, quoted=true)
       case x
       when Cons
-        s = StringIO.new
-        s << "'" unless quoted
-        s << '('
-        s << print(x.h, true)
-        x = x.t
-        while x != nil
-          s << " #{print(x.h, true)}"
+        if x.h == :quote
+          "'#{print(x.t.h)}"
+        else
+          s = StringIO.new
+          s << "'" unless quoted
+          s << '('
+          s << print(x.h, true)
           x = x.t
+          while x != nil
+            s << " #{print(x.h, true)}"
+            x = x.t
+          end
+          s << ')'
+          s.string
         end
-        s << ')'
-        s.string
       when Symbol
         "#{quoted ? '' : "'"}#{x.to_s}"
       when Numeric
@@ -28,7 +32,7 @@ module Rambda
       when FalseClass
         '#f'
       when NilClass
-        "'()"
+        '()'
       when Closure
         text = Pretty.print(x.lambda_exp, true)
         if text.size < 100
