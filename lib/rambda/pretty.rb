@@ -36,6 +36,12 @@ module Rambda
         else
           '#<procedure>'
         end
+      when Primitive
+        "#<procedure:#{x.var}>"
+      when Sender
+        "#<procedure:#{x.method}>"
+      else
+        "#<ruby:#{x.inspect}>"
       end
     end
 

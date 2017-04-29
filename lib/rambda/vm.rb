@@ -56,9 +56,6 @@ module Rambda
             a.val ||= BuiltIn.get_sender(a.method).val
             a = a.val.call(*r)
             x = [:return]
-          elsif a.is_a?(Proc) # TODO: remove
-            a = a.call(*r)
-            x = [:return]
           else
             raise "I don't know how to apply a #{a.class}: #{a.inspect}"
           end

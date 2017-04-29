@@ -37,6 +37,15 @@ module Rambda
     end
 
     def set(var, val)
+      e = self
+      while e
+        if e.hash.key?(var)
+          e.hash[var] = val
+          return val
+        end
+        e = e.parent
+      end
+      # if not already bound in any parent env...
       @env[var] = val
     end
 

@@ -67,6 +67,10 @@ EOD
       expect(eval(code)).to eql 93
     end
 
+    it 'parameterless lambda' do
+      expect(eval('((lambda () 42))')).to eql 42
+    end
+
     it 'ruby-eval' do
       expect(eval('(ruby-eval "$LOAD_PATH")')).to be_a Array
     end
@@ -105,8 +109,6 @@ EOD
         z = VM.resume(rt_state)
         puts "resume returned #{z.inspect}"
       end
-      # log
-      # system("echo '#{Oj.dump(log.last, mode: :object, circular: true)}' | python -mjson.tool")
     end
 
     def eval(code, env=Env.new, persister=proc{})

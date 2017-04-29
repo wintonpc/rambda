@@ -22,5 +22,15 @@ module Rambda
       expect(e.look_up(:a)).to eql 1
       expect(e.look_up(:b)).to eql 2
     end
+
+    it '#set sets at the right level' do
+      e1 = Env.from(a: 1)
+      e2 = Env.new(e1)
+      e3 = Env.new(e1)
+      e2.set(:a, 9)
+      expect(e1.look_up(:a)).to eql 9
+      expect(e2.look_up(:a)).to eql 9
+      expect(e3.look_up(:a)).to eql 9
+    end
   end
 end

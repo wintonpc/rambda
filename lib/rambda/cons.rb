@@ -11,6 +11,7 @@ module Rambda
     end
 
     def self.to_array(x)
+      return [] if x.nil?
       return x unless x.is_a?(Cons)
       a = []
       while x != nil
@@ -21,6 +22,7 @@ module Rambda
     end
 
     def self.to_array1(x)
+      return [] if x.nil?
       return x unless x.is_a?(Cons)
       a = []
       while x != nil
