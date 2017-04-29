@@ -11,7 +11,18 @@ require 'rambda/closure'
 require 'rambda/built_in'
 
 module Rambda
-  # Your code goes here...
+  def eval(code, env=Env.new)
+    cs = CharStream.from(StringIO.new(code))
+    ts = TokenStream.from(cs)
+    ss = SexpStream.from(ts)
+    result = nil
+    ss.each do |exp|
+      result = VM.eval(Compiler.compile(exp), env)
+    end
+    result
+  end
+
+  extend self
 end
 
 def repl

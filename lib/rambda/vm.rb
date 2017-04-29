@@ -40,7 +40,6 @@ module Rambda
           s = [ret, e, r, s]
           r = []
         when :apply
-          persister.call({a: a, x: x, e: e, r: r, s: s})
           if a.is_a?(Closure)
             x = a.body
             if a.formals.size != r.size
@@ -61,6 +60,7 @@ module Rambda
           end
         when :return
           x, e, r, s = *s
+          persister.call({a: a, x: x, e: e, r: r, s: s})
         else
           raise "unexpected instruction: #{x}"
         end

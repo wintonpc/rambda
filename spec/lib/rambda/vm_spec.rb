@@ -75,6 +75,14 @@ EOD
       expect(eval('(ruby-eval "$LOAD_PATH")')).to be_a Array
     end
 
+    it 'ruby-call' do
+      expect(eval('(ruby-call (ruby-eval "proc { |x| x * 2 }") 7)')).to eql 14
+    end
+
+    it 'ruby-call-proc' do
+      expect(eval('(ruby-call-proc "|x| x * 2" 15)')).to eql 30
+    end
+
     it 'ruby method sending' do
       code = <<EOD
 (set! lp (ruby-eval "$LOAD_PATH"))

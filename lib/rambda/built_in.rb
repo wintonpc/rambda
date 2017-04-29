@@ -8,6 +8,8 @@ module Rambda
         prim(:+) { |a, b| a + b }
         prim(:*) { |a, b| a * b }
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
+        prim(:'ruby-call') { |p, *args| p.call(*args) }
+        prim(:'ruby-call-proc') { |rcode, *args| Kernel.eval("proc {#{rcode}}").call(*args) }
       end
       @primitives
     end
