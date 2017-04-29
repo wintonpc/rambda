@@ -83,6 +83,11 @@ EOD
       expect(eval('(ruby-call-proc "|x| x * 2" 15)')).to eql 30
     end
 
+    it 'apply' do
+      p = Rambda.eval('+')
+      expect(VM.apply(p, Env.new, [1, 2])).to eql 3
+    end
+
     it 'ruby method sending' do
       code = <<EOD
 (set! lp (ruby-eval "$LOAD_PATH"))

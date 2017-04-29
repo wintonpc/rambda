@@ -22,6 +22,10 @@ module Rambda
     result
   end
 
+  def apply(p, *args, env)
+    VM.apply(p, env, args)
+  end
+
   extend self
 end
 

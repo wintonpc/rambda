@@ -7,7 +7,11 @@ module Rambda
         @primitives = {}
         prim(:+) { |a, b| a + b }
         prim(:*) { |a, b| a * b }
+
+        # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
+
+        # pass scheme values into ruby code
         prim(:'ruby-call') { |p, *args| p.call(*args) }
         prim(:'ruby-call-proc') { |rcode, *args| Kernel.eval("proc {#{rcode}}").call(*args) }
       end

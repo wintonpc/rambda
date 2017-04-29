@@ -1,9 +1,14 @@
 require 'rambda/closure'
+require 'rambda/compiler'
 
 module Rambda
   module VM
     def eval(x, env, persister: proc{})
       run(nil, x, env, [], [], persister)
+    end
+
+    def apply(p, env, args, persister: proc{})
+      run(p, Compiler.compile(Cons.from_array1([p, *args])), env, args, [], persister)
     end
 
     def resume(state, persister: proc{})
