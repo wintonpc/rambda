@@ -1,12 +1,28 @@
+require 'rambda/closure'
+
 module Rambda
   module BuiltIn
     def primitives
-      @primitives ||= {
-          '+': lambda { |a, b| a + b },
-          '*': lambda { |a, b| a * b },
+      unless @primitives
+        @primitives = {}
+        prim(:+) { |a, b| a + b }
+        prim(:*) { |a, b| a * b }
+        prim(:'ruby-eval') { |str| Kernel.eval(str) }
+      end
+      @primitives
+    end
 
-          'ruby-eval': lambda { |str| Kernel.eval(str) }
-      }
+    def get_sender(method)
+      @senders ||= {}
+      @senders.fetch(method) do
+        @senders[method] = Sender.new(method, lambda { |receiver, *args| receiver.send(method, *args) })
+      end
+    end
+
+    private
+
+    def prim(name, &block)
+      @primitives[name] = Primitive.new(name, block)
     end
 
     extend self

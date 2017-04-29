@@ -80,12 +80,16 @@ EOD
     end
 
     it 'persists state intermittently' do
+      # (ruby-eval "raise 'oops'")
+      # (ruby-eval "puts 'press x to fail, any other key to succeed'")
+      # (ruby-eval "if STDIN.readline.start_with?('x'); raise 'oops'; end")
+      # (ruby-eval "unless $failed; $failed = true; raise 'oops'; end")
       code = <<EOD
 (begin
   (set! a 1)
   (set! b (+ a 2))
   (set! c (+ b 3))
-  (ruby-eval "if STDIN.readline.start_with?('x'); raise 'oops'; end")
+  (ruby-eval "unless $failed; $failed = true; raise 'oops'; end")
   (.call (ruby-eval "->(c) { puts 'c = ' + c.to_s }") c))
 EOD
 
@@ -96,7 +100,9 @@ EOD
       rescue => e
         puts e
         last_state = log.last
-        z = VM.resume(last_state)
+        rt_state = Oj.load(Oj.dump(last_state, mode: :object, circular: true), mode: :object, circular: true)
+        puts "log size: #{log.size}"
+        z = VM.resume(rt_state)
         puts "resume returned #{z.inspect}"
       end
       # log

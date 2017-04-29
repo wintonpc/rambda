@@ -1,3 +1,5 @@
+require 'rambda/closure'
+
 module Rambda
   module Compiler
     def compile(x, nxt=[:halt])
@@ -29,7 +31,7 @@ module Rambda
           application =
               if x.h.is_a?(Symbol) && x.h.to_s.start_with?('.')
                 method = x.h.to_s[1..-1]
-                p = lambda { |receiver, *args| receiver.send(method, *args) }
+                p = Sender.new(method)
                 [:constant, p, [:apply]]
               else
                 compile(x.h, [:apply])

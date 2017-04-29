@@ -15,7 +15,6 @@ module Rambda
 
     def run(a, x, e, r, s, persister)
       while x != [:halt]
-        persister.call({a: a, x: x, e: e, r: r, s: s})
         # puts "AXERS: #{a.inspect} #{x.inspect} #{e.inspect} #{r.inspect} #{s.inspect}"
         case x[0]
         when :refer
@@ -41,6 +40,7 @@ module Rambda
           s = [ret, e, r, s]
           r = []
         when :apply
+          persister.call({a: a, x: x, e: e, r: r, s: s})
           if a.is_a?(Closure)
             x = a.body
             if a.formals.size != r.size
@@ -48,7 +48,15 @@ module Rambda
             end
             e = Env.new(a.env, a.formals.zip(r).to_h)
             r = []
-          elsif a.is_a?(Proc)
+          elsif a.is_a?(Primitive)
+            a.val ||= BuiltIn.primitives[a.var].val
+            a = a.val.call(*r)
+            x = [:return]
+          elsif a.is_a?(Sender)
+            a.val ||= BuiltIn.get_sender(a.method).val
+            a = a.val.call(*r)
+            x = [:return]
+          elsif a.is_a?(Proc) # TODO: remove
             a = a.call(*r)
             x = [:return]
           else
