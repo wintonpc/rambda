@@ -39,7 +39,7 @@ module Rambda
     end
 
     def register_stdlib(env)
-      Rambda.eval(File.read(File.expand_path('../stdlib.rs', __FILE__)), env)
+      Rambda.eval(File.read(File.expand_path('../stdlib.ss', __FILE__)), env)
     end
 
     private

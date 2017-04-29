@@ -96,6 +96,10 @@ EOD
       expect(eval(code)).to be_a String
     end
 
+    it 'map' do
+      expect(eval("(map '(1 2 3) (lambda (x) (* x x)))'")).to eql Cons.from_array([1,4,9])
+    end
+
     it 'persists state intermittently' do
       # (ruby-eval "raise 'oops'")
       # (ruby-eval "puts 'press x to fail, any other key to succeed'")
