@@ -6,7 +6,14 @@ module Rambda
     def primitives
       unless @primitives
         @primitives = {}
-        prim(:+) { |a, b| a + b }
+        prim(:+) { |*args| args.reduce(0, :+) }
+        prim(:-) do |*args|
+          if args.size == 1
+            -args[0]
+          else
+            args[0] - args[1..-1].reduce(0, :+)
+          end
+        end
         prim(:*) { |a, b| a * b }
         prim(:eq?) { |a, b| a == b }
         prim(:nil?) { |a| a.nil? }

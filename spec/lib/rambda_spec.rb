@@ -101,6 +101,44 @@ EOD
       end
     end
 
+    it '+' do
+      verify 0, '(+)'
+      verify 5, '(+ 5)'
+      verify 3, '(+ 1 2)'
+      verify 6, '(+ 1 2 3)'
+    end
+
+    it '-' do
+      verify -5, '(- 5)'
+      verify 4, '(- 5 1)'
+      verify 1, '(- 5 1 3)'
+    end
+
+    it 'compose' do
+      verify 2, "((compose car cdr) '(1 2 3))"
+    end
+
+    it 'compose-many' do
+      verify Cons.from_array([1,2,3]), "((compose-many (list)) '(1 2 3))"
+      verify 1, "((compose-many (list car)) '(1 2 3))"
+      verify 2, "((compose-many (list car cdr)) '(1 2 3))"
+      verify 3, "((compose-many (list car cdr cdr)) '(1 2 3))"
+    end
+
+    it 'foldr' do
+      verify Cons.from_array([1,2,3]),
+             "(foldr cons '() '(1 2 3))"
+
+      verify 0, "(foldr + 0 '())"
+      verify 1, "(foldr + 0 '(1))"
+      verify 3, "(foldr + 0 '(1 2))"
+      verify 6, "(foldr + 0 '(1 2 3))"
+    end
+
+    it 'define-syntax' do
+
+    end
+
     def verify(expected, code=nil)
       code ||= yield
       if expected.is_a?(Class) && expected < Exception
