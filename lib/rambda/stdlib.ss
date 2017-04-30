@@ -22,5 +22,3 @@
 (set! cadr (compose-many (list car cdr)))
 (set! caddr (compose-many (list car cdr cdr)))
 (set! cadddr (compose-many (list car cdr cdr cdr)))
-
-

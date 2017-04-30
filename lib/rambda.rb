@@ -39,3 +39,5 @@ class Proc
     "#<Proc@#{File.basename(fn)}:#{line}>"
   end
 end
+
+Rambda::BuiltIn.register_stdlib(Rambda::Env.built_in)

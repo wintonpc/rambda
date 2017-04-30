@@ -1,5 +1,5 @@
 require 'rspec'
-require 'rambda/env'
+require 'rambda'
 
 module Rambda
   describe Env do
@@ -31,6 +31,14 @@ module Rambda
       expect(e1.look_up(:a)).to eql 9
       expect(e2.look_up(:a)).to eql 9
       expect(e3.look_up(:a)).to eql 9
+    end
+
+    it 'cannot redefine built-in' do
+      e1 = Env.new
+      e2 = Env.new
+      e1.set(:+, nil)
+      expect(Rambda.eval('+', e1)).to eql nil
+      expect(Rambda.eval('(+ 1 2)', e2)).to eql 3
     end
   end
 end

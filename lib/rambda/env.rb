@@ -65,12 +65,20 @@ module Rambda
       end
     end
 
-    def self.built_in
-      @built_in ||= begin
-        env = Env.new(nil, BuiltIn.primitives)
-        BuiltIn.register_stdlib(env)
-        env
+    def try_look_up(var)
+      @env.fetch(var) do
+        if @parent
+          @parent.look_up(var)
+        elsif self != Env.built_in
+          Env.built_in.try_look_up(var)
+        else
+          :NoSuchVar
+        end
       end
+    end
+
+    def self.built_in
+      @built_in ||= Env.new(nil, BuiltIn.primitives)
     end
 
     def inspect

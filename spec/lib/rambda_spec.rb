@@ -136,7 +136,23 @@ EOD
     end
 
     it 'define-syntax' do
+      verify 5 do
+        <<EOD
+(begin
+  (define-syntax five (lambda (stx) 5))
+  (five))
+EOD
+      end
+    end
 
+    it 'define-syntax constant' do
+      verify 5 do
+        <<EOD
+(begin
+  (define-syntax five (lambda (stx) 5))
+  five)
+EOD
+      end
     end
 
     def verify(expected, code=nil)

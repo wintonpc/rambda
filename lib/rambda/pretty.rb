@@ -45,6 +45,8 @@ module Rambda
         else
           '#<procedure>'
         end
+      when Transformer
+        "#<syntax-transformer #{Pretty.print(x.exp)}>"
       when Primitive
         "#<procedure:#{x.var}>"
       when Sender
