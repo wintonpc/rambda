@@ -42,15 +42,20 @@ EOD
       verify RuntimeError, "'(1 2 . 3 4)"
     end
 
-  it 'lambda varargs' do
-    verify Cons.from_array([1,2,[3,4]]) do
-      <<EOD
+    it 'lambda varargs' do
+      verify Cons.from_array([1,2,[3,4]]) do
+        <<EOD
 ((lambda (a b . c)
    (list a b c))
  1 2 3 4)
 EOD
+      end
     end
-  end
+
+    it 'lambda L' do
+      verify Cons.from_array([1,2]),
+             '((lambda L L) 1 2)'
+    end
 
     def verify(expected, code=nil)
       code ||= yield

@@ -14,7 +14,7 @@ module Rambda
           obj = Cons.to_array1(x.t)[0]
           [:constant, obj, nxt]
         when :lambda
-          vars = Cons.to_array(x.t.h)
+          vars = x.t.h
           bodies = x.t.t
           [:close, vars, compile(Cons.new(:begin, bodies), [:return]), x, nxt]
         when :begin

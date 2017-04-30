@@ -46,10 +46,7 @@ module Rambda
         when :apply
           if a.is_a?(Closure)
             x = a.body
-            if a.formals.size != r.size
-              raise "procedure of arguments #{a.formals} was passed the wrong number of arguments: #{r}"
-            end
-            e = Env.new(a.env, a.formals.zip(r).to_h)
+            e = Env.new(a.env, Cons.to_array1(map_formals(a.formals, Cons.from_array1(r))).to_h)
             r = []
           elsif a.is_a?(Primitive)
             a.val ||= BuiltIn.primitives[a.var].val
@@ -71,6 +68,18 @@ module Rambda
       end
       observer.halted if observer
       a
+    end
+
+    private
+
+    def map_formals(vars, vals)
+      if vars == nil && vals == nil
+        nil
+      elsif !vars.is_a?(Cons)
+        Cons.new([vars, vals], nil)
+      else
+        Cons.new([vars.h, vals.h], map_formals(vars.t, vals.t))
+      end
     end
 
     extend self
