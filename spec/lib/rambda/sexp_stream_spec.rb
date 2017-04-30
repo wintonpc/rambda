@@ -44,6 +44,14 @@ module Rambda
       verify_reads('(a . b)', [Cons.new(:a, :b)])
     end
 
+    it 'reads quoted dotted pairs' do
+      verify_reads('(quote (a . b))', [Cons.new(:quote, Cons.new(Cons.new(:a, :b), nil))])
+    end
+
+    it 'reads quoted2 dotted pairs' do
+      verify_reads("'(a . b)", [Cons.new(:quote, Cons.new(Cons.new(:a, :b), nil))])
+    end
+
     it 'reads nil' do
       verify_reads('()', [nil])
     end

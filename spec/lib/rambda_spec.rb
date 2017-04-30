@@ -174,7 +174,38 @@ EOD
       end
     end
 
+    it 'define - value' do
+      verify 5 do
+        <<EOD
+(define x 5)
+x
+EOD
+      end
+    end
+
+    it 'define - procedure' do
+      verify 6 do
+        <<EOD
+(define (add1 x) (+ x 1))
+(add1 5)
+EOD
+      end
+    end
+
+    it 'nested define' do
+      verify -25 do
+        <<EOD
+(define (foo x)
+  (define (square x)
+    (* x x))
+  (- (square x)))
+(foo 5)
+EOD
+      end
+    end
+
     def verify(expected, code=nil)
+      Pretty.print(expected)
       code ||= yield
       if expected.is_a?(Class) && expected < Exception
         expect { Rambda.eval(code) }.to raise_error expected

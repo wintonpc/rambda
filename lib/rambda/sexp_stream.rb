@@ -9,10 +9,10 @@ module Rambda
             read = lambda do
               t = token_stream.next
               case t
-              when '('
+              when '(', '['
                 s = nil
                 while true
-                  if token_stream.peek == ')'
+                  if token_stream.peek == ')' || token_stream.peek == ']'
                     token_stream.next
                     s = reverse_list(s, nil)
                     break
@@ -20,7 +20,7 @@ module Rambda
                     token_stream.next # .
                     last = read.()
                     closer = token_stream.next
-                    raise 'Invalid dotted notation' if closer != ')'
+                    raise 'Invalid dotted notation' if closer != ')' && closer != ']'
                     s = reverse_list(s, last)
                     break
                   else

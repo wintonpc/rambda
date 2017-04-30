@@ -6,7 +6,7 @@ module Rambda
     def initialize(env=Env.new)
       @env = env
     end
-    
+
     def compile(x, nxt=[:halt])
       if x.is_a?(Symbol)
         if (tx = try_tx(x))
@@ -46,27 +46,27 @@ module Rambda
           altc = compile(alt, nxt)
           compile(test, [:test, conc, altc])
         else
-          application =
-              if x.h.is_a?(Symbol) && x.h.to_s.start_with?('.')
-                method = x.h.to_s[1..-1]
-                p = Sender.new(method)
-                [:constant, p, [:apply]]
-              else
-                if x.h.is_a?(Symbol) && (tx = try_tx(x.h))
-                  compile(expand_tx(tx.exp, x), nxt)
+          if x.h.is_a?(Symbol) && (tx = try_tx(x.h))
+            expanded = expand_tx(tx.exp, x)
+            compile(expanded, nxt)
+          else
+            application =
+                if x.h.is_a?(Symbol) && x.h.to_s.start_with?('.')
+                  method = x.h.to_s[1..-1]
+                  p = Sender.new(method)
+                  [:constant, p, [:apply]]
                 else
                   compile(x.h, [:apply])
                 end
-              end
-
-          args = Cons.to_array1(x.t)
-          c = args.reduce(application) do |c, arg|
-            compile(arg, [:argument, c])
-          end
-          if nxt == [:return]
-            c
-          else
-            [:frame, force(nxt), c]
+            args = Cons.to_array1(x.t)
+            c = args.reduce(application) do |c, arg|
+              compile(arg, [:argument, c])
+            end
+            if nxt == [:return]
+              c
+            else
+              [:frame, force(nxt), c]
+            end
           end
         end
       else
@@ -86,8 +86,12 @@ module Rambda
     end
 
     def expand_tx(tx, x)
-      c = compile(Cons.from_array1([tx, Cons.from_array1([:quote, x])]), [:halt])
-      VM.eval(c, @env)
+      app = Cons.from_array1([tx, Cons.from_array1([:quote, x])])
+      # puts "expanding #{app}"
+      c = compile(app, [:halt])
+      expanded = VM.eval(c, @env)
+      # puts "=> #{expanded}"
+      expanded
     end
 
     def expand_qq(x)

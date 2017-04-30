@@ -15,6 +15,11 @@ module Rambda
           end
         end
         prim(:*) { |a, b| a * b }
+        prim(:<) { |a, b| a < b }
+        prim(:<=) { |a, b| a <= b }
+        prim(:>) { |a, b| a > b }
+        prim(:>=) { |a, b| a >= b }
+        prim(:abs) { |a| a.abs }
         prim(:eq?) { |a, b| a == b }
         prim(:nil?) { |a| a.nil? }
         prim(:cons) { |h, t| Cons.new(h, t) }
@@ -27,6 +32,7 @@ module Rambda
           c.t
         end
         prim(:list) { |*vs| Cons.from_array1(vs) }
+        prim(:pair?) { |x| x.is_a?(Cons) }
         prim(:'vector->list') { |v| Cons.from_array1(v) }
         prim(:'append-lists') do |xss|
           al = nil

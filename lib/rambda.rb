@@ -18,6 +18,7 @@ module Rambda
     result = nil
     compiler = Compiler.new(env)
     ss.each do |exp|
+      # puts "Rambda.eval #{exp}"
       result = VM.eval(compiler.compile(exp), env, observer: observer)
     end
     result

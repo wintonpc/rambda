@@ -8,18 +8,26 @@ module Rambda
       when Cons
         if x.h == :quote
           "'#{print(x.t.h)}"
+        elsif x.h == :quasiquote
+          "`#{print(x.t.h)}"
+        elsif x.h == :unquote
+          ",#{print(x.t.h)}"
+        elsif x.h == :'unquote-splicing'
+          ",@#{print(x.t.h)}"
         else
           s = StringIO.new
           s << "'" unless quoted
           s << '('
           s << print(x.h, true)
           x = x.t
-          while x != nil
-            s << " #{print(x.h, true)}"
-            if x.t.is_a?(Cons) || x.t.nil?
+          loop do
+            if x.is_a?(Cons)
+              s << " #{print(x.h, true)}"
               x = x.t
+            elsif x.nil?
+              break
             else
-              s << " . #{print(x.t, true)}"
+              s << " . #{print(x, true)}"
               break
             end
           end

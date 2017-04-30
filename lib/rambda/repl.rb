@@ -10,7 +10,7 @@ module Rambda
       print 'λ> '
       ss.each do |exp|
         begin
-          puts Pretty.print(VM.eval(Compiler.compile(exp), env))
+          puts Pretty.print(VM.eval(Compiler.new.compile(exp), env))
         rescue Env::NoSuchVar => e
           puts "!! Variable #{e.var_name} is not bound"
         end
