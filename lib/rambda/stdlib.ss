@@ -34,6 +34,15 @@
         (map car vvs) (map cadr vvs)))
      (cadr stx) (cddr stx))))
 
+(define-syntax let*
+  (lambda (stx)
+    (let ([vvs (cadr stx)]
+          [exprs (cddr stx)])
+      (if (nil? vvs)
+          `(let () ,@exprs)
+          `(let (,(car vvs))
+             (let* ,(cdr vvs) ,@exprs))))))
+
 (define-syntax define
   (lambda (stx)
     (let ([fst (cadr stx)])

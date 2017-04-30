@@ -214,6 +214,17 @@ EOD
       end
     end
 
+    it 'let*' do
+      verify 3 do
+        <<EOD
+(let* ([a 1]
+       [b (+ a 1)]
+       [c (+ b 1)])
+  c)
+EOD
+      end
+    end
+
     it 'comments' do
       verify 21 do
         <<EOD
