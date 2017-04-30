@@ -21,9 +21,17 @@ module Rambda
           while true
             c = char_stream.next
             case c
-            when '(', ')', '[', ']', "'"
+            when '(', ')', '[', ']', "'", '`'
               flush.()
               emit.(c)
+            when ','
+              flush.()
+              if char_stream.peek == '@'
+                char_stream.next
+                emit.(',@')
+              else
+                emit.(c)
+              end
             when '"'
               t += '"'
               read_string.()

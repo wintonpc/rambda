@@ -13,6 +13,8 @@ module Rambda
         when :quote
           obj = Cons.to_array1(x.t)[0]
           [:constant, obj, nxt]
+        when :quasiquote
+          compile(expand_qq(x), nxt)
         when :lambda
           vars = x.t.h
           bodies = x.t.t
@@ -49,6 +51,27 @@ module Rambda
         end
       else
         [:constant, x, nxt]
+      end
+    end
+
+    private
+
+    def expand_qq(x)
+      x = x.t.h
+      if !x.is_a?(Cons)
+        Cons.from_array1([:quote, x])
+      else
+        Cons.from_array1([:'append-lists', Cons.new(:list, Cons.map(x, &method(:expand_qq_element)))])
+      end
+    end
+
+    def expand_qq_element(x)
+      if x.is_a?(Cons) && x.h == :unquote
+        Cons.from_array1([:list, x.t.h])
+      elsif x.is_a?(Cons) && x.h == :'unquote-splicing'
+        x.t.h
+      else
+        Cons.from_array1([:list, expand_qq(Cons.from_array1([:quasiquote, x]))])
       end
     end
 

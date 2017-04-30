@@ -62,6 +62,22 @@ module Rambda
                     Cons.from_array([:quote, [:c, :d]])])
     end
 
+    it 'reads quote' do
+      verify_reads("'a", [Cons.from_array([:quote, :a])])
+    end
+
+    it 'reads quasiquote' do
+      verify_reads("`a", [Cons.from_array([:quasiquote, :a])])
+    end
+
+    it 'reads unquote' do
+      verify_reads(",a", [Cons.from_array([:unquote, :a])])
+    end
+
+    it 'reads unquote-splicing' do
+      verify_reads(",@a", [Cons.from_array([:'unquote-splicing', :a])])
+    end
+
     def verify_reads(code, expected)
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)

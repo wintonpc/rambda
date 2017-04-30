@@ -30,6 +30,12 @@ module Rambda
                 s
               when "'"
                 Cons.from_array([:quote, read.()])
+              when '`'
+                Cons.from_array([:quasiquote, read.()])
+              when ','
+                Cons.from_array([:unquote, read.()])
+              when ',@'
+                Cons.from_array([:'unquote-splicing', read.()])
               else
                 t
               end

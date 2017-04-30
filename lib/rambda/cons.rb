@@ -40,6 +40,14 @@ module Rambda
       a
     end
 
+    def self.map(c, &block)
+      if c.nil?
+        nil
+      else
+        Cons.new(block.call(c.h), map(c.t, &block))
+      end
+    end
+
     def to_s
       Pretty.print(self)
     end

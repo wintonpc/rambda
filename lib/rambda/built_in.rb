@@ -21,6 +21,21 @@ module Rambda
         end
         prim(:list) { |*vs| Cons.from_array1(vs) }
         prim(:'vector->list') { |v| Cons.from_array1(v) }
+        prim(:'append-lists') do |xss|
+          al = nil
+          al = proc do |current, rest|
+            if current.nil?
+              if rest.nil?
+                nil
+              else
+                al.call(rest.h, rest.t)
+              end
+            else
+              Cons.new(current.h, al.call(current.t, rest))
+            end
+          end
+          al.call(nil, xss)
+        end
 
         # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }

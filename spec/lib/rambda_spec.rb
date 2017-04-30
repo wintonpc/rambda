@@ -57,6 +57,50 @@ EOD
              '((lambda L L) 1 2)'
     end
 
+    it 'quote' do
+      verify Cons.from_array([1,2,3]),
+             "'(1 2 3)"
+    end
+
+    it 'append-lists' do
+      verify Cons.from_array([1,2,3,4,5,6]),
+             "(append-lists '((1 2) (3 4) (5 6)))"
+    end
+
+    it 'quasiquote - works like quote' do
+      verify Cons.from_array([1,2,3]),
+             '`(1 2 3)'
+      verify :x, '`x'
+    end
+
+    it 'quasiquote - unquote' do
+      verify Cons.from_array([1,2,3]) do
+        <<EOD
+(set! c 3)
+`(1 2 ,c)
+EOD
+      end
+    end
+
+    it 'quasiquote - unquote-splicing' do
+      verify Cons.from_array([1,2,3,4]) do
+        <<EOD
+(set! c '(3 4))
+`(1 2 ,@c)
+EOD
+      end
+    end
+
+    it 'quasiquote - nested' do
+      verify Cons.from_array([1,2,3,[4,5]]) do
+        <<EOD
+(set! a 2)
+(set! b 5)
+`(1 ,a ,@(list 3 `(4 ,b)))
+EOD
+      end
+    end
+
     def verify(expected, code=nil)
       code ||= yield
       if expected.is_a?(Class) && expected < Exception
