@@ -16,6 +16,7 @@ module Rambda
         end
 
         read_string = nil
+        eat_comment = nil
 
         read_tokens = proc do
           while true
@@ -36,6 +37,8 @@ module Rambda
               t += '"'
               read_string.()
               flush.()
+            when ';'
+              eat_comment.()
             when ' ', "\n"
               flush.()
             else
@@ -62,6 +65,10 @@ module Rambda
               escaped = false
             end
           end
+        end
+
+        eat_comment = proc do
+          until char_stream.next == "\n"; end
         end
 
         begin

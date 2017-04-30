@@ -214,6 +214,17 @@ EOD
       end
     end
 
+    it 'comments' do
+      verify 21 do
+        <<EOD
+;; multiplies some stuff
+(let ([a 3]  ; this is a
+      [b 7]) ; this is b
+  (* a b))
+EOD
+      end
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield
