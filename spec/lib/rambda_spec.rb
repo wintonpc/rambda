@@ -145,12 +145,31 @@ EOD
       end
     end
 
+    it 'define-syntax top level' do
+      verify 5 do
+        <<EOD
+(define-syntax five (lambda (stx) 5))
+(five)
+EOD
+      end
+    end
+
     it 'define-syntax constant' do
       verify 5 do
         <<EOD
 (begin
   (define-syntax five (lambda (stx) 5))
   five)
+EOD
+      end
+    end
+
+    it 'define-syntax - function as transformer' do
+      verify 5 do
+        <<EOD
+(set! f (lambda (stx) 5))
+(define-syntax five f)
+(five)
 EOD
       end
     end

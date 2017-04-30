@@ -138,7 +138,7 @@ EOD
       ss = SexpStream.from(ts)
       result = nil
       ss.each do |exp|
-        result = VM.eval(Compiler.compile(exp), env, observer: observer)
+        result = VM.eval(Compiler.new.compile(exp), env, observer: observer)
       end
       result
     end

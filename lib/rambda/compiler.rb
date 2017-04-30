@@ -2,11 +2,15 @@ require 'rambda/closure'
 require 'rambda/vm'
 
 module Rambda
-  module Compiler
-    def compile(x, nxt=[:halt], env=Env.new)
+  class Compiler
+    def initialize(env=Env.new)
+      @env = env
+    end
+    
+    def compile(x, nxt=[:halt])
       if x.is_a?(Symbol)
-        if (tx = try_tx(x, env))
-          compile(expand_tx(tx.exp, x, env), nxt, env)
+        if (tx = try_tx(x))
+          compile(expand_tx(tx.exp, x), nxt)
         else
           [:refer, x, force(nxt)]
         end
@@ -14,33 +18,33 @@ module Rambda
         case x.h
         when :set!
           var, exp = *Cons.to_array1(x.t)
-          compile(exp, [:assign, var, force(nxt)], env)
+          compile(exp, [:assign, var, force(nxt)])
         when :'define-syntax'
           var = x.t.h
           transformer_exp = x.t.t.h
-          env.set(var, Transformer.new(transformer_exp))
+          @env.set(var, Transformer.new(transformer_exp))
           force(nxt)
         when :quote
           obj = Cons.to_array1(x.t)[0]
           [:constant, obj, force(nxt)]
         when :quasiquote
-          compile(expand_qq(x), nxt, env)
+          compile(expand_qq(x), nxt)
         when :lambda
           vars = x.t.h
           bodies = x.t.t
-          [:close, vars, compile(Cons.new(:begin, bodies), [:return], env), x, force(nxt)]
+          [:close, vars, compile(Cons.new(:begin, bodies), [:return]), x, force(nxt)]
         when :begin
           exprs = x.t
           if exprs.nil?
             force(nxt)
           else
-            compile(exprs.h, proc { compile(Cons.new(:begin, exprs.t), nxt, env) }, env)
+            compile(exprs.h, proc { compile(Cons.new(:begin, exprs.t), nxt) })
           end
         when :if
           test, con, alt = *Cons.to_array1(x.t)
-          conc = compile(con, nxt, env)
-          altc = compile(alt, nxt, env)
-          compile(test, [:test, conc, altc], env)
+          conc = compile(con, nxt)
+          altc = compile(alt, nxt)
+          compile(test, [:test, conc, altc])
         else
           application =
               if x.h.is_a?(Symbol) && x.h.to_s.start_with?('.')
@@ -48,16 +52,16 @@ module Rambda
                 p = Sender.new(method)
                 [:constant, p, [:apply]]
               else
-                if x.h.is_a?(Symbol) && (tx = try_tx(x.h, env))
-                  compile(expand_tx(tx.exp, x, env), nxt, env)
+                if x.h.is_a?(Symbol) && (tx = try_tx(x.h))
+                  compile(expand_tx(tx.exp, x), nxt)
                 else
-                  compile(x.h, [:apply], env)
+                  compile(x.h, [:apply])
                 end
               end
 
           args = Cons.to_array1(x.t)
           c = args.reduce(application) do |c, arg|
-            compile(arg, [:argument, c], env)
+            compile(arg, [:argument, c])
           end
           if nxt == [:return]
             c
@@ -72,8 +76,8 @@ module Rambda
 
     private
 
-    def try_tx(var, env)
-      tx = env.try_look_up(var)
+    def try_tx(var)
+      tx = @env.try_look_up(var)
       tx.is_a?(Transformer) && tx
     end
 
@@ -81,9 +85,9 @@ module Rambda
       nxt.is_a?(Proc) ? nxt.call : nxt
     end
 
-    def expand_tx(tx, x, env)
-      c = compile(Cons.from_array1([tx, Cons.from_array1([:quote, x])]), [:halt], env)
-      VM.eval(c, env)
+    def expand_tx(tx, x)
+      c = compile(Cons.from_array1([tx, Cons.from_array1([:quote, x])]), [:halt])
+      VM.eval(c, @env)
     end
 
     def expand_qq(x)
@@ -104,7 +108,5 @@ module Rambda
         Cons.from_array1([:list, expand_qq(Cons.from_array1([:quasiquote, x]))])
       end
     end
-
-    extend self
   end
 end

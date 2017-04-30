@@ -16,8 +16,9 @@ module Rambda
     ts = TokenStream.from(cs)
     ss = SexpStream.from(ts)
     result = nil
+    compiler = Compiler.new(env)
     ss.each do |exp|
-      result = VM.eval(Compiler.compile(exp), env, observer: observer)
+      result = VM.eval(compiler.compile(exp), env, observer: observer)
     end
     result
   end

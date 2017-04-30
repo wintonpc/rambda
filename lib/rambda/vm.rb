@@ -8,7 +8,7 @@ module Rambda
     end
 
     def apply(p, env, args, observer: nil)
-      run(p, Compiler.compile(Cons.from_array1([p, *args])), env, args, [], observer)
+      run(p, Compiler.new(env).compile(Cons.from_array1([p, *args])), env, args, [], observer)
     end
 
     def resume(state, observer: nil)
