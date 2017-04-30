@@ -55,3 +55,6 @@
 
 (define (raise msg)
   (ruby-call-proc "|x| raise x" msg))
+
+(define (env key)
+  (ruby-call-proc "|x| ENV[x] || false" key))

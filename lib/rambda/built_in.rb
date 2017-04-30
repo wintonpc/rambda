@@ -52,6 +52,7 @@ module Rambda
         end
 
         prim(:void) { Void }
+        prim(:puts) { |x| puts x }
 
         # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
