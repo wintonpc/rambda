@@ -40,6 +40,10 @@ module Rambda
       verify_reads('(a b)', [Cons.from_array([:a, :b])])
     end
 
+    it 'reads dotted pairs' do
+      verify_reads('(a . b)', [Cons.new(:a, :b)])
+    end
+
     it 'reads nil' do
       verify_reads('()', [nil])
     end
@@ -62,7 +66,8 @@ module Rambda
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)
       ss = SexpStream.from(ts)
-      expect(ss.to_a).to eql expected
+      actual = ss.to_a
+      expect(actual).to eql expected
     end
   end
 end

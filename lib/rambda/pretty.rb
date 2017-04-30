@@ -16,7 +16,12 @@ module Rambda
           x = x.t
           while x != nil
             s << " #{print(x.h, true)}"
-            x = x.t
+            if x.t.is_a?(Cons) || x.t.nil?
+              x = x.t
+            else
+              s << " . #{print(x.t, true)}"
+              break
+            end
           end
           s << ')'
           s.string

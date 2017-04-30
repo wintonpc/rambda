@@ -14,10 +14,10 @@ module Rambda
           obj = Cons.to_array1(x.t)[0]
           [:constant, obj, nxt]
         when :lambda
-          vars, body = *Cons.to_array1(x.t)
-          vars = Cons.to_array(vars)
-          [:close, vars, compile(body, [:return]), x, nxt]
-        when :begin # TODO: implement with macro
+          vars = Cons.to_array(x.t.h)
+          bodies = x.t.t
+          [:close, vars, compile(Cons.new(:begin, bodies), [:return]), x, nxt]
+        when :begin
           exprs = Cons.to_array1(x.t)
           exprs.reverse.reduce(nxt) do |c, expr|
             compile(expr, c)

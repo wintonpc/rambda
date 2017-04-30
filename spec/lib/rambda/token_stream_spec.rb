@@ -10,6 +10,7 @@ module Rambda
       verify_tokens '""', ['']
       verify_tokens '"\\\\"', ['\\']
       verify_tokens '"\\""', ['"']
+      verify_tokens '(a . b)', ['(', :a, '.', :b, ')']
     end
 
     def verify_tokens(code, expected)

@@ -19,6 +19,7 @@ module Rambda
           c.is_a?(Cons) or raise "Not a pair: #{Pretty.print(c)}"
           c.t
         end
+        prim(:list) { |*vs| Cons.from_array1(vs) }
         prim(:'vector->list') { |v| Cons.from_array1(v) }
 
         # evaluate ruby code

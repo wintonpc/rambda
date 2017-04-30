@@ -31,7 +31,12 @@ module Rambda
             when ' ', "\n"
               flush.()
             else
-              t += c
+              if c == '.' && t == '' && char_stream.peek == ' '
+                flush.()
+                emit.(c)
+              else
+                t += c
+              end
             end
           end
         end

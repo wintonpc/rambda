@@ -10,15 +10,24 @@ module Rambda
               t = token_stream.next
               case t
               when '('
-                s = []
+                s = nil
                 while true
                   if token_stream.peek == ')'
                     token_stream.next
+                    s = reverse_list(s, nil)
                     break
+                  elsif token_stream.peek == '.'
+                    token_stream.next # .
+                    last = read.()
+                    closer = token_stream.next
+                    raise 'Invalid dotted notation' if closer != ')'
+                    s = reverse_list(s, last)
+                    break
+                  else
+                    s = Cons.new(read.(), s)
                   end
-                  s << read.()
                 end
-                Cons.from_array(s)
+                s
               when "'"
                 Cons.from_array([:quote, read.()])
               else
@@ -29,6 +38,16 @@ module Rambda
           end
         rescue StopIteration
         end
+      end
+    end
+
+    private
+
+    def reverse_list(list, tail)
+      if list.nil?
+        tail
+      else
+        reverse_list(list.t, Cons.new(list.h, tail))
       end
     end
 
