@@ -21,6 +21,7 @@ module Rambda
         prim(:>=) { |a, b| a >= b }
         prim(:abs) { |a| a.abs }
         prim(:eq?) { |a, b| a == b }
+        prim(:not) { |a| !a }
         prim(:nil?) { |a| a.nil? }
         prim(:cons) { |h, t| Cons.new(h, t) }
         prim(:car) do |c|

@@ -97,7 +97,7 @@ EOD
     end
 
     it 'map' do
-      expect(eval("(map '(1 2 3) (lambda (x) (* x x)))'")).to eql Cons.from_array([1,4,9])
+      expect(eval("(map (lambda (x) (* x x)) '(1 2 3))")).to eql Cons.from_array([1,4,9])
     end
 
     it 'persists state intermittently' do

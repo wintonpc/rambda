@@ -204,6 +204,16 @@ EOD
       end
     end
 
+    it 'let' do
+      verify 21 do
+        <<EOD
+(let ([a 3]
+      [b 7])
+  (* a b))
+EOD
+      end
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield

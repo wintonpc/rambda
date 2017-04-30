@@ -87,10 +87,10 @@ module Rambda
 
     def expand_tx(tx, x)
       app = Cons.from_array1([tx, Cons.from_array1([:quote, x])])
-      # puts "expanding #{app}"
+      puts "expanding #{app}"
       c = compile(app, [:halt])
       expanded = VM.eval(c, @env)
-      # puts "=> #{expanded}"
+      puts "=> #{expanded}"
       expanded
     end
 

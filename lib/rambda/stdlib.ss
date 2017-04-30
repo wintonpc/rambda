@@ -1,8 +1,8 @@
 (set! map
-      (lambda (xs p)
+      (lambda (p xs)
         (if (nil? xs)
             '()
-            (cons (p (car xs)) (map (cdr xs) p)))))
+            (cons (p (car xs)) (map p (cdr xs))))))
 
 (set! compose
       (lambda (f g)
@@ -26,12 +26,20 @@
 (set! caadr (compose-many (list car car cdr)))
 (set! cdadr (compose-many (list cdr car cdr)))
 
+(define-syntax let
+  (lambda (stx)
+    ((lambda (vvs exprs)
+       ((lambda (vars vals)
+          `((lambda ,vars ,@exprs) ,@vals))
+        (map car vvs) (map cadr vvs)))
+     (cadr stx) (cddr stx))))
+
 (define-syntax define
   (lambda (stx)
-    ((lambda (fst)
-       (if (pair? fst)
-           ((lambda (name formals exprs)
-              `(set! ,name (lambda ,formals ,@exprs)))
-            (car fst) (cdr fst) (cddr stx))
-           `(set! ,fst ,(caddr stx))))
-     (cadr stx))))
+    (let ([fst (cadr stx)])
+      (if (not (pair? fst))
+          `(set! ,fst ,(caddr stx))
+          (let ([name (car fst)]
+                [formals (cdr fst)]
+                [exprs (cddr stx)])
+            `(set! ,name (lambda ,formals ,@exprs)))))))
