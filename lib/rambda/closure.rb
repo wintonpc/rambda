@@ -3,4 +3,5 @@ module Rambda
   Transformer = Struct.new(:exp)
   Primitive = Struct.new(:var, :val)
   Sender = Struct.new(:method, :val)
+  Void = :'%#void'
 end

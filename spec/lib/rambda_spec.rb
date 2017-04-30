@@ -236,6 +236,16 @@ EOD
       end
     end
 
+    it 'if' do
+      verify 1, '(if #t 1 2)'
+      verify 2, '(if #f 1 2)'
+    end
+
+    it 'single branch if' do
+      verify 1, '(if #t 1)'
+      verify :'%#void', '(if #f 1)'
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield

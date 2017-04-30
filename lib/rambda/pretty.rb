@@ -34,6 +34,8 @@ module Rambda
           s << ')'
           s.string
         end
+      when Rambda::Void
+        ''
       when Symbol
         "#{quoted ? '' : "'"}#{x.to_s}"
       when Numeric

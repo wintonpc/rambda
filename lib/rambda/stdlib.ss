@@ -52,3 +52,6 @@
                 [formals (cdr fst)]
                 [exprs (cddr stx)])
             `(set! ,name (lambda ,formals ,@exprs)))))))
+
+(define (raise msg)
+  (ruby-call-proc "|x| raise x" msg))

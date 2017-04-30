@@ -51,6 +51,8 @@ module Rambda
           al.call(nil, xss)
         end
 
+        prim(:void) { Void }
+
         # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
 

@@ -18,7 +18,7 @@ module Rambda
         case x.h
         when :set!
           var, exp = *Cons.to_array1(x.t)
-          compile(exp, [:assign, var, force(nxt)])
+          compile(exp, [:assign, var, [:constant, Void, force(nxt)]])
         when :'define-syntax'
           var = x.t.h
           transformer_exp = x.t.t.h
@@ -42,6 +42,7 @@ module Rambda
           end
         when :if
           test, con, alt = *Cons.to_array1(x.t)
+          alt ||= Cons.from_array1([:quote, Void])
           conc = compile(con, nxt)
           altc = compile(alt, nxt)
           compile(test, [:test, conc, altc])
@@ -87,10 +88,10 @@ module Rambda
 
     def expand_tx(tx, x)
       app = Cons.from_array1([tx, Cons.from_array1([:quote, x])])
-      puts "expanding #{app}"
+      # puts "expanding #{app}"
       c = compile(app, [:halt])
       expanded = VM.eval(c, @env)
-      puts "=> #{expanded}"
+      # puts "=> #{expanded}"
       expanded
     end
 
