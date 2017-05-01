@@ -87,5 +87,9 @@ module Rambda
       end
       "#<Env #{h.map { |(k, v)| "#{k}=#{v.inspect}"}.join(' ')}>"
     end
+
+    def to_s
+      inspect
+    end
   end
 end
