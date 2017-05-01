@@ -1,4 +1,5 @@
 module Rambda
+  Env = Struct.new(:parent, :env)
   class Env
     class NoSuchVar < StandardError
       attr_accessor :var_name
@@ -17,16 +18,12 @@ module Rambda
     end
 
     def initialize(parent=nil, env={})
-      @env = env
-      @parent = parent
+      self.env = env
+      self.parent = parent
     end
 
     def hash
-      @env
-    end
-
-    def parent
-      @parent
+      env
     end
 
     def self.from(hash)
@@ -36,7 +33,7 @@ module Rambda
     end
 
     def import(hash)
-      @env.merge!(hash)
+      env.merge!(hash)
       self
     end
 
@@ -50,13 +47,13 @@ module Rambda
         e = e.parent
       end
       # if not already bound in any parent env...
-      @env[var] = val
+      env[var] = val
     end
 
     def look_up(var)
-      @env.fetch(var) do
-        if @parent
-          @parent.look_up(var)
+      env.fetch(var) do
+        if parent
+          parent.look_up(var)
         elsif self != Env.built_in
           Env.built_in.look_up(var)
         else
@@ -66,9 +63,9 @@ module Rambda
     end
 
     def try_look_up(var)
-      @env.fetch(var) do
-        if @parent
-          @parent.look_up(var)
+      env.fetch(var) do
+        if parent
+          parent.look_up(var)
         elsif self != Env.built_in
           Env.built_in.try_look_up(var)
         else

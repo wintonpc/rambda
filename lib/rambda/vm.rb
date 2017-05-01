@@ -12,6 +12,7 @@ module Rambda
     end
 
     def resume(state, observer: nil)
+      puts state[:x].inspect
       run(state[:a], state[:x], state[:e], state[:r], state[:s], observer)
     end
 
