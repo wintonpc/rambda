@@ -58,3 +58,9 @@
 
 (define (env key)
   (ruby-call-proc "|x| ENV[x] || false" key))
+
+(define (for-each p xs)
+  (if (pair? xs)
+      (begin
+        (p (car xs))
+        (for-each p (cdr xs)))))
