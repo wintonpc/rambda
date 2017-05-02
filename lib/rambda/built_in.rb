@@ -36,6 +36,7 @@ module Rambda
         prim(:list) { |*vs| Cons.from_array1(vs) }
         prim(:pair?) { |x| x.is_a?(Cons) }
         prim(:'vector->list') { |v| Cons.from_array1(v) }
+        prim(:'list->vector') { |v| Cons.to_array1(v) }
         prim(:'append-lists') do |xss|
           al = nil
           al = proc do |current, rest|
