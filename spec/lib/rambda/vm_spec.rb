@@ -96,6 +96,17 @@ EOD
       expect(eval(code)).to be_a String
     end
 
+    it 'ruby method identifiers' do
+      code = <<EOD
+(define lps (list (ruby-eval "$LOAD_PATH")))
+(map .last lps)
+EOD
+      r = eval(code)
+      expect(r).to be_a Cons
+      expect(r.h).to be_a String
+      expect(r.t).to be nil
+    end
+
     it 'map' do
       expect(eval("(map (lambda (x) (* x x)) '(1 2 3))")).to eql Cons.from_array([1,4,9])
     end

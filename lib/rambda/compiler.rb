@@ -11,6 +11,10 @@ module Rambda
       if x.is_a?(Symbol)
         if (tx = try_tx(x))
           compile(expand_tx(tx.exp, x), nxt)
+        elsif x.is_a?(Symbol) && x.to_s.start_with?('.')
+          method = x.to_s[1..-1]
+          p = Sender.new(method)
+          [:constant, p, force(nxt)]
         else
           [:refer, x, force(nxt)]
         end
@@ -51,16 +55,8 @@ module Rambda
             expanded = expand_tx(tx.exp, x)
             compile(expanded, nxt)
           else
-            application =
-                if x.h.is_a?(Symbol) && x.h.to_s.start_with?('.')
-                  method = x.h.to_s[1..-1]
-                  p = Sender.new(method)
-                  [:constant, p, [:apply]]
-                else
-                  compile(x.h, [:apply])
-                end
             args = Cons.to_array1(x.t)
-            c = args.reduce(application) do |c, arg|
+            c = args.reduce(compile(x.h, [:apply])) do |c, arg|
               compile(arg, [:argument, c])
             end
             if nxt == [:return]
