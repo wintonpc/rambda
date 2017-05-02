@@ -21,8 +21,12 @@
 
 (set! cadr (compose-many (list car cdr)))
 (set! cddr (compose-many (list cdr cdr)))
+(set! cdddr (compose-many (list cdr cdr cdr)))
 (set! caddr (compose-many (list car cdr cdr)))
+(set! caaddr (compose-many (list car car cdr cdr)))
 (set! cadddr (compose-many (list car cdr cdr cdr)))
+(set! caddddr (compose-many (list car cdr cdr cdr cdr)))
+(set! cadaddr (compose-many (list car cdr car cdr cdr)))
 (set! caadr (compose-many (list car car cdr)))
 (set! cdadr (compose-many (list cdr car cdr)))
 

@@ -20,6 +20,7 @@ module Rambda
         prim(:>) { |a, b| a > b }
         prim(:>=) { |a, b| a >= b }
         prim(:abs) { |a| a.abs }
+        prim(:'++') { |*xs| xs.map(&:to_s).join }
         prim(:eq?) { |a, b| a == b }
         prim(:not) { |a| !a }
         prim(:nil?) { |a| a.nil? }
