@@ -60,6 +60,9 @@ module Rambda
               break
             elsif c == "\\" && !escaped
               escaped = true
+            elsif c == 'n' && escaped
+              t += "\n"
+              escaped = false
             else
               t += c
               escaped = false
