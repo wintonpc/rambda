@@ -98,3 +98,10 @@
             `(pipe ,(push v app) ,@rest))))))
 
 
+(define (append . L)
+  (append-lists L))
+
+(define (flatmap p xs)
+  (if (nil? xs)
+      '()
+      (append (p (car xs)) (flatmap p (cdr xs)))))

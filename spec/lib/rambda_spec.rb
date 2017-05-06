@@ -314,6 +314,16 @@ EOD
 EOD
     end
 
+    it 'append' do
+      verify Cons.from_array([1,2,3,4]), "(append '(1 2) '(3 4))"
+    end
+
+    it 'flatmap' do
+      verify Cons.from_array1([1,10,2,20]), <<EOD
+(flatmap (lambda (x) (list x (* x 10))) '(1 2))
+EOD
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield

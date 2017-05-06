@@ -21,6 +21,7 @@ module Rambda
         prim(:>=) { |a, b| a >= b }
         prim(:abs) { |a| a.abs }
         prim(:'++') { |*xs| xs.map(&:to_s).join }
+        prim(:'join') { |delim, xs| xs.join(delim) }
         prim(:eq?) { |a, b| a == b }
         prim(:not) { |a| !a }
         prim(:nil?) { |a| a.nil? }
@@ -43,6 +44,7 @@ module Rambda
         end
         prim(:'vector->list') { |v| Cons.from_array1(v) }
         prim(:'list->vector') { |v| Cons.to_array1(v) }
+        prim(:'string->symbol') { |str| str.to_sym }
         prim(:'append-lists') do |xss|
           al = nil
           al = proc do |current, rest|
@@ -64,6 +66,7 @@ module Rambda
 
         # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
+        prim(:'rubify') { |x| rubify(x) }
 
         # pass scheme values into ruby code
         prim(:'ruby-call') { |p, *args| schemify(p.call(*args.map(&method(:rubify)))) }
@@ -100,6 +103,8 @@ module Rambda
     def rubify(x)
       if x.is_a?(Cons)
         Cons.to_array1(x)
+      elsif x.is_a?(Hash)
+        x.map { |(k, v)| [k, rubify(v)] }.to_h
       else
         x
       end
