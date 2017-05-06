@@ -284,6 +284,22 @@ EOD
       expect(result).to eql Cons.from_array1([1, 4, 9])
     end
 
+    it 'pipeline/tap' do
+      # verify 42, '(pipe 42)'
+      verify Cons.from_array1([-5, 5, 42]), <<EOD
+(set! z 0)
+(set! zz 0)
+(define (set-zz) (set! zz 42))
+(let ([p (pipe 3
+               ((lambda (x) (* x x)))
+               -
+               (tap (set! z 5))
+               (tap set-zz)
+               (+ 4))])
+  (list p z zz))
+EOD
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield

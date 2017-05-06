@@ -77,13 +77,24 @@
 (define (reverse xs)
   (foldl (lambda (xs x) (cons x xs)) '() xs))
 
-;; (define-syntax ||
-;;   (lambda (stx)
-;;     (let ([v (car stx)]
-;;           [ts (cdr stx)])
-;;       (if (nil? ts)
-;;           v
-;;           (let ([t (car ts)]
-;;                 [ts (cdr gs)]
-;;                 [g (gensym)])
-;;             (
+(define (push x xs)
+  (reverse (cons x (reverse xs))))
+
+(define-syntax pipe
+  (lambda (stx)
+    (define (applicationify x)
+      (if (pair? x)
+          (if (eq? (car x) 'tap)
+              (let ([g (gensym)])
+                `((lambda (,g) ,(applicationify (cadr x)) ,g)))
+              x)
+          (list x)))
+    (let ([v (cadr stx)]
+          [ts (cddr stx)])
+      (if (nil? ts)
+          v
+          (let ([app (applicationify (car ts))]
+                [rest (cdr ts)])
+            `(pipe ,(push v app) ,@rest))))))
+
+
