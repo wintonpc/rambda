@@ -60,8 +60,8 @@ module Rambda
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
 
         # pass scheme values into ruby code
-        prim(:'ruby-call') { |p, *args| p.call(*args) }
-        prim(:'ruby-call-proc') { |rcode, *args| Kernel.eval("proc {#{rcode}}").call(*args) }
+        prim(:'ruby-call') { |p, *args| schemify(p.call(*args.map(&method(:rubify)))) }
+        prim(:'ruby-call-proc') { |rcode, *args| schemify(Kernel.eval("proc {#{rcode}}").call(*args.map(&method(:rubify)))) }
       end
       @primitives
     end
@@ -69,7 +69,7 @@ module Rambda
     def get_sender(method)
       @senders ||= {}
       @senders.fetch(method) do
-        @senders[method] = Sender.new(method, lambda { |receiver, *args| receiver.send(method, *args) })
+        @senders[method] = Sender.new(method, lambda { |receiver, *args| schemify(receiver.send(method, *args.map(&method(:rubify)))) })
       end
     end
 
@@ -78,6 +78,26 @@ module Rambda
     end
 
     private
+
+    def schemify(x)
+      if arrayish?(x)
+        Cons.from_array1(x)
+      else
+        x
+      end
+    end
+
+    def arrayish?(x)
+      x.is_a?(Array) || (x.is_a?(Enumerable) && x.respond_to?(:reverse!))
+    end
+
+    def rubify(x)
+      if x.is_a?(Cons)
+        Cons.to_array1(x)
+      else
+        x
+      end
+    end
 
     def prim(name, &block)
       @primitives[name] = Primitive.new(name, block)

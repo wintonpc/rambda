@@ -246,6 +246,29 @@ EOD
       verify :'%#void', '(if #f 1)'
     end
 
+    it 'senders marshal out vectors -> lists' do
+      result = Rambda.eval <<EOD
+(define object (ruby-eval "Object"))
+(.methods object)
+EOD
+      expect(result).to be_a Cons
+    end
+
+    it 'ruby-call marshals in lists -> vectors' do
+      result = Rambda.eval <<EOD
+(define p (ruby-eval "proc { |xs| xs.map { |x| x * x} }"))
+(ruby-call p '(1 2 3))
+EOD
+      expect(result).to eql Cons.from_array1([1, 4, 9])
+    end
+
+    it 'ruby-call-proc marshals in lists -> vectors' do
+      result = Rambda.eval <<EOD
+(ruby-call-proc "|xs| xs.map { |x| x * x}" '(1 2 3))
+EOD
+      expect(result).to eql Cons.from_array1([1, 4, 9])
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield
