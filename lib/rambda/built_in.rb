@@ -35,6 +35,7 @@ module Rambda
         end
         prim(:list) { |*vs| Cons.from_array1(vs) }
         prim(:pair?) { |x| x.is_a?(Cons) }
+        prim(:'make-map') { |*kvs| kvs.each_slice(2).to_h }
         prim(:gensym) do
           $last_gensym ||= 0
           $last_gensym += 1

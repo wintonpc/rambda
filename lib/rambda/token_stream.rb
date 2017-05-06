@@ -22,7 +22,7 @@ module Rambda
           while true
             c = char_stream.next
             case c
-            when '(', ')', '[', ']', "'", '`'
+            when '(', ')', '[', ']', '{', '}', "'", '`'
               flush.()
               emit.(c)
             when ','

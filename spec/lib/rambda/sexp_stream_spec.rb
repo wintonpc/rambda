@@ -86,6 +86,11 @@ module Rambda
       verify_reads(",@a", [Cons.from_array([:'unquote-splicing', :a])])
     end
 
+    it 'reads maps' do
+      verify_reads('{}', [Cons.from_array1([:'make-map'])])
+      verify_reads('{1 2}', [Cons.from_array1([:'make-map', 1, 2])])
+    end
+
     def verify_reads(code, expected)
       cs = CharStream.from(StringIO.new(code))
       ts = TokenStream.from(cs)

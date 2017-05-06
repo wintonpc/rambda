@@ -300,6 +300,20 @@ EOD
 EOD
     end
 
+    it 'make-map' do
+      verify ({}), '(make-map)'
+      verify ({1 => 2}), '(make-map 1 2)'
+      verify ({a: 1, b: 2}), "(make-map 'a 1 'b 2)"
+    end
+
+    it 'maps' do
+      verify ({a: 1, b: 2}), <<EOD
+(define a 1)
+(define b 2)
+{a a b b}
+EOD
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield
