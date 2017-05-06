@@ -135,6 +135,16 @@ EOD
       verify 6, "(foldr + 0 '(1 2 3))"
     end
 
+    it 'foldl' do
+      verify Cons.from_array([1,2,3]),
+             "(foldl (lambda (xs x) (cons x xs)) '() '(3 2 1))"
+
+      verify 0, "(foldl + 0 '())"
+      verify 1, "(foldl + 0 '(1))"
+      verify 3, "(foldl + 0 '(1 2))"
+      verify 6, "(foldl + 0 '(1 2 3))"
+    end
+
     it 'define-syntax' do
       verify 5 do
         <<EOD
@@ -244,6 +254,11 @@ EOD
     it 'single branch if' do
       verify 1, '(if #t 1)'
       verify :'%#void', '(if #f 1)'
+    end
+
+    it 'reverse' do
+      verify nil, "(reverse '())"
+      verify Cons.from_array1([1]), "(reverse '(1))"
     end
 
     it 'senders marshal out vectors -> lists' do

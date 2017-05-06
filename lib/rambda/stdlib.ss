@@ -4,16 +4,16 @@
             '()
             (cons (p (car xs)) (map p (cdr xs))))))
 
-(set! compose
-      (lambda (f g)
-        (lambda (x)
-          (f (g x)))))
-
 (set! foldr
       (lambda (p init xs)
         (if (nil? xs)
             init
             (p (car xs) (foldr p init (cdr xs))))))
+
+(set! compose
+      (lambda (f g)
+        (lambda (x)
+          (f (g x)))))
 
 (set! compose-many
       (lambda (fs)
@@ -68,3 +68,22 @@
       (begin
         (p (car xs))
         (for-each p (cdr xs)))))
+
+(define (foldl p init xs)
+  (if (nil? xs)
+      init
+      (foldl p (p init (car xs)) (cdr xs))))
+
+(define (reverse xs)
+  (foldl (lambda (xs x) (cons x xs)) '() xs))
+
+;; (define-syntax ||
+;;   (lambda (stx)
+;;     (let ([v (car stx)]
+;;           [ts (cdr stx)])
+;;       (if (nil? ts)
+;;           v
+;;           (let ([t (car ts)]
+;;                 [ts (cdr gs)]
+;;                 [g (gensym)])
+;;             (

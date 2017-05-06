@@ -35,6 +35,11 @@ module Rambda
         end
         prim(:list) { |*vs| Cons.from_array1(vs) }
         prim(:pair?) { |x| x.is_a?(Cons) }
+        prim(:gensym) do
+          $last_gensym ||= 0
+          $last_gensym += 1
+          "%#t#{$last_gensym}".to_sym
+        end
         prim(:'vector->list') { |v| Cons.from_array1(v) }
         prim(:'list->vector') { |v| Cons.to_array1(v) }
         prim(:'append-lists') do |xss|
