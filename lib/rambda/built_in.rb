@@ -1,6 +1,7 @@
 require 'rambda/closure'
 require 'rambda/cons'
 require 'thread'
+require 'securerandom'
 
 module Rambda
   module BuiltIn
@@ -86,26 +87,14 @@ module Rambda
           if p.formals != nil
             raise 'async: argument must be a parameterless closure'
           end
+          env = Env.new(vm_info.environment)
+          env.read_only = true
           ae = AsyncExpr.new
-          ae.mutex = Mutex.new
           ae.proc = p
-          m = ae.mutex
-          startup = Mutex.new
-          startup.synchronize do
-            t = Thread.start do
-              startup.synchronize {} # don't let the thread start until ae.thread has been set
-              begin
-                value = VM.apply(p, vm_info.environment, nil, observer: vm_info.observer)
-                m.synchronize { ae.value = value }
-              rescue => e
-                m.synchronize { ae.exception = e }
-              ensure
-                m.synchronize { ae.done = true}
-              end
-            end
-            m.synchronize { ae.thread = t }
-          end
-          ae
+          ae.env = env
+          ae.mutex = Mutex.new
+          ae.vm_id = SecureRandom.hex(4)
+          spawn_async(ae, vm_info.observer)
         end
 
         prim(:'wait') do |ae|
@@ -141,6 +130,39 @@ module Rambda
 
     def register_stdlib(env)
       Rambda.eval(File.read(File.expand_path('../stdlib.ss', __FILE__)), env)
+    end
+
+    def spawn_async(ae, observer)
+      kick_async(ae) do
+        VM.apply(ae.proc, ae.env, nil, observer: observer, vm_id: ae.vm_id)
+      end
+    end
+
+    def resume_async(ae, state, observer)
+      kick_async(ae) do
+        VM.resume(state, observer: observer, vm_id: ae.vm_id)
+      end
+    end
+
+    def kick_async(ae, &block)
+      m = ae.mutex
+      startup = Mutex.new
+      startup.synchronize do
+        t = Thread.start do
+          startup.synchronize {} # don't let the thread start until ae.thread has been set
+          begin
+            value = block.call
+            m.synchronize { ae.value = value }
+            value
+          rescue => e
+            m.synchronize { ae.exception = e }
+          ensure
+            m.synchronize { ae.done = true}
+          end
+        end
+        m.synchronize { ae.thread = t }
+      end
+      ae
     end
 
     private

@@ -1,5 +1,5 @@
 module Rambda
-  Env = Struct.new(:parent, :env)
+  Env = Struct.new(:parent, :env, :read_only)
   class Env
     class NoSuchVar < StandardError
       attr_accessor :var_name
@@ -38,6 +38,9 @@ module Rambda
     end
 
     def set(var, val)
+      if read_only
+        raise "cannot set #{var.inspect} in read-only env"
+      end
       e = self
       while e
         if e.hash.key?(var)
@@ -79,14 +82,15 @@ module Rambda
     end
 
     def inspect
-      '#<Env>'
-      # e = self
-      # h = {}
-      # while e
-      #   h = e.hash.merge(h)
-      #   e = e.parent
-      # end
-      # "#<Env #{h.map { |(k, v)| "#{k}=#{v.inspect}"}.join(' ')}>"
+      # '#<Env>'
+      e = self
+      h = {}
+      while e
+        h = e.hash.merge(h)
+        e = e.parent
+        break
+      end
+      "#<Env #{h.map { |(k, v)| "#{k}=#{v == self ? '#<Env>' : v.inspect}"}.join(' ')}>"
     end
 
     def to_s

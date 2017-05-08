@@ -12,8 +12,8 @@ module Rambda
       run(p, Compiler.new(env).compile(Cons.from_array1([p, *args])), env, args, [], observer, vm_id)
     end
 
-    def resume(state, observer: nil)
-      run(state[:a], state[:x], state[:e], state[:r], state[:s], observer, nil)
+    def resume(state, observer: nil, vm_id: nil)
+      run(state[:a], state[:x], state[:e], state[:r], state[:s], observer, vm_id)
     end
 
     Info = Struct.new(:environment, :observer)
