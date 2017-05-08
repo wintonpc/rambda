@@ -64,7 +64,7 @@ module Rambda
         end
 
         prim(:void) { Void }
-        prim(:puts) { |*args| puts args.join }
+        prim(:puts) { |*args| print "#{args.join}\n" }
         prim(:pp) { |*args| puts args.map { |x| x.is_a?(String) ? x : Pretty.print(x) }.join }
 
         # evaluate ruby code
