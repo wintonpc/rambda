@@ -153,6 +153,7 @@ module Rambda
           begin
             value = block.call
             m.synchronize { ae.value = value }
+            # TODO: need to trigger persist for parent VM to update future
             value
           rescue => e
             m.synchronize { ae.exception = e }
