@@ -65,7 +65,7 @@ module Rambda
 
         prim(:void) { Void }
         prim(:puts) { |*args| print "#{args.join}\n" }
-        prim(:pp) { |*args| puts args.map { |x| x.is_a?(String) ? x : Pretty.print(x) }.join }
+        prim(:pp) { |*args| print "#{args.map { |x| x.is_a?(String) ? x : Pretty.print(x) }.join}\n" }
 
         # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
@@ -75,7 +75,11 @@ module Rambda
         prim(:'ruby-call') { |p, *args| schemify(p.call(*args.map(&method(:rubify)))) }
         prim(:'ruby-call-proc') { |rcode, *args| schemify(Kernel.eval("proc {#{rcode}}").call(*args.map(&method(:rubify)))) }
 
-        prim(:'%#async') do |p, env, obs|
+        special_prim(:'%#current-environment') do |vm_info|
+          vm_info.environment
+        end
+
+        special_prim(:'%#async') do |vm_info, p|
           unless p.is_a?(Closure)
             raise "async: argument must be a closure but was: #{p.inspect}"
           end
@@ -91,7 +95,7 @@ module Rambda
             t = Thread.start do
               startup.synchronize {} # don't let the thread start until ae.thread has been set
               begin
-                value = VM.apply(p, env, nil, observer: obs)
+                value = VM.apply(p, vm_info.environment, nil, observer: vm_info.observer)
                 m.synchronize { ae.value = value }
               rescue => e
                 m.synchronize { ae.exception = e }
@@ -165,6 +169,10 @@ module Rambda
 
     def prim(name, &block)
       @primitives[name] = Primitive.new(name, block)
+    end
+
+    def special_prim(name, &block)
+      @primitives[name] = Primitive.new(name, block, true)
     end
 
     extend self

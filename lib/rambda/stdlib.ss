@@ -109,8 +109,5 @@
 (define (current-environment)
   (%#current-environment))
 
-(define (current-observer)
-  (%#current-observer))
-
 (define (async p)
-  (%#async p (current-environment) (current-observer)))
+  (%#async p))

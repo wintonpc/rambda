@@ -24,8 +24,8 @@ module Rambda
     result
   end
 
-  def apply(p, *args, env, observer: nil)
-    VM.apply(p, env, args, observer: observer)
+  def apply(p, *args, env, observer: nil, vm_id: nil)
+    VM.apply(p, env, args, observer: observer, vm_id: vm_id)
   end
 
   extend self

@@ -50,10 +50,6 @@ module Rambda
           conc = compile(con, nxt)
           altc = compile(alt, nxt)
           compile(test, [:test, conc, altc])
-        when :'%#current-environment'
-          [:env, force(nxt)]
-        when :'%#current-observer'
-          [:observer, force(nxt)]
         else
           if x.h.is_a?(Symbol) && (tx = try_tx(x.h))
             expanded = expand_tx(tx.exp, x)
