@@ -79,13 +79,14 @@ module Rambda
     end
 
     def inspect
-      e = self
-      h = {}
-      while e
-        h = e.hash.merge(h)
-        e = e.parent
-      end
-      "#<Env #{h.map { |(k, v)| "#{k}=#{v.inspect}"}.join(' ')}>"
+      '#<Env>'
+      # e = self
+      # h = {}
+      # while e
+      #   h = e.hash.merge(h)
+      #   e = e.parent
+      # end
+      # "#<Env #{h.map { |(k, v)| "#{k}=#{v.inspect}"}.join(' ')}>"
     end
 
     def to_s

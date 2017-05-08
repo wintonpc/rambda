@@ -105,3 +105,12 @@
   (if (nil? xs)
       '()
       (append (p (car xs)) (flatmap p (cdr xs)))))
+
+(define (current-environment)
+  (%#current-environment))
+
+(define (current-observer)
+  (%#current-observer))
+
+(define (async p)
+  (%#async p (current-environment) (current-observer)))

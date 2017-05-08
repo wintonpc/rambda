@@ -4,4 +4,5 @@ module Rambda
   Primitive = Struct.new(:var, :val)
   Sender = Struct.new(:method, :val)
   Void = :'%#void'
+  AsyncExpr = Struct.new(:proc, :thread, :done, :value, :exception, :mutex, :vm_id)
 end

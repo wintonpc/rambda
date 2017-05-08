@@ -1,5 +1,6 @@
 require 'rambda/closure'
 require 'rambda/cons'
+require 'thread'
 
 module Rambda
   module BuiltIn
@@ -42,6 +43,7 @@ module Rambda
           $last_gensym += 1
           "%#t#{$last_gensym}".to_sym
         end
+        prim(:sleep) { |seconds| sleep(seconds) }
         prim(:'vector->list') { |v| Cons.from_array1(v) }
         prim(:'list->vector') { |v| Cons.to_array1(v) }
         prim(:'string->symbol') { |str| str.to_sym }
@@ -63,6 +65,7 @@ module Rambda
 
         prim(:void) { Void }
         prim(:puts) { |*args| puts args.join }
+        prim(:pp) { |*args| puts args.map { |x| x.is_a?(String) ? x : Pretty.print(x) }.join }
 
         # evaluate ruby code
         prim(:'ruby-eval') { |str| Kernel.eval(str) }
@@ -71,6 +74,56 @@ module Rambda
         # pass scheme values into ruby code
         prim(:'ruby-call') { |p, *args| schemify(p.call(*args.map(&method(:rubify)))) }
         prim(:'ruby-call-proc') { |rcode, *args| schemify(Kernel.eval("proc {#{rcode}}").call(*args.map(&method(:rubify)))) }
+
+        prim(:'%#async') do |p, env, obs|
+          unless p.is_a?(Closure)
+            raise "async: argument must be a closure but was: #{p.inspect}"
+          end
+          if p.formals != nil
+            raise 'async: argument must be a parameterless closure'
+          end
+          ae = AsyncExpr.new
+          ae.mutex = Mutex.new
+          ae.proc = p
+          m = ae.mutex
+          startup = Mutex.new
+          startup.synchronize do
+            t = Thread.start do
+              startup.synchronize {} # don't let the thread start until ae.thread has been set
+              begin
+                value = VM.apply(p, env, nil, observer: obs)
+                m.synchronize { ae.value = value }
+              rescue => e
+                m.synchronize { ae.exception = e }
+              ensure
+                m.synchronize { ae.done = true}
+              end
+            end
+            m.synchronize { ae.thread = t }
+          end
+          ae
+        end
+
+        prim(:'wait') do |ae|
+          ae.thread.join
+          if ae.exception
+            raise ae.exception
+          else
+            ae.value
+          end
+        end
+
+        prim(:'wait-all') do |aes|
+          aes = Cons.to_array1(aes)
+          aes.map(&:thread).map(&:join)
+          exception = aes.map(&:exception).compact.first
+          if exception
+            raise exception
+          else
+            Cons.from_array1(aes.map(&:value))
+          end
+        end
+
       end
       @primitives
     end

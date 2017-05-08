@@ -1,5 +1,6 @@
 require 'rambda/closure'
 require 'rambda/compiler'
+require 'securerandom'
 
 module Rambda
   module VM
@@ -18,6 +19,7 @@ module Rambda
     private
 
     def run(a, x, e, r, s, observer)
+      @id = SecureRandom.hex(4)
       while x != [:halt]
         # puts "AXERS: #{a.inspect} #{x.inspect} #{e.inspect} #{r.inspect} #{s.inspect}"
         case x[0]
@@ -27,6 +29,12 @@ module Rambda
         when :constant
           _, val, x = *x
           a = val
+        when :env
+          _, x = *x
+          a = e
+        when :observer
+          _, x = *x
+          a = observer
         when :assign
           _, var, x = *x
           e.set(var, a)
@@ -61,12 +69,12 @@ module Rambda
           end
         when :return
           x, e, r, s = *s
-          observer.returned({a: a, x: x, e: e, r: r, s: s}) if observer
+          observer.returned(@id, {a: a, x: x, e: e, r: r, s: s}) if observer
         else
           raise "unexpected instruction: #{x}"
         end
       end
-      observer.halted if observer
+      observer.halted(@id) if observer
       a
     end
 

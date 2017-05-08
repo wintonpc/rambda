@@ -132,7 +132,7 @@ EOD
 
       log = []
       observer = Class.new do
-        define_method(:returned) do |state|
+        define_method(:returned) do |_id, state|
           log << state
         end
       end.new

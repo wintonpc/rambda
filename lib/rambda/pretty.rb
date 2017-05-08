@@ -61,6 +61,20 @@ module Rambda
         "#<procedure:#{x.var}>"
       when Sender
         "#<procedure:#{x.method}>"
+      when Env
+        '#<environment>'
+      when AsyncExpr
+        text =
+            if x.done
+              if x.exception
+                "error: #{x.exception.to_s}"
+              else
+                x.value
+              end
+            else
+              '(pending)'
+            end
+        "#<future #{text}>"
       else
         "#<ruby:#{x.inspect}>"
       end

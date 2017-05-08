@@ -324,6 +324,46 @@ EOD
 EOD
     end
 
+    it '%#current-environment' do
+      expect(Rambda.eval('(%#current-environment)')).to be_a Rambda::Env
+    end
+
+    it 'current-environment' do
+      expect(Rambda.eval('(current-environment)')).to be_a Rambda::Env
+    end
+
+    it 'async/wait' do
+      verify 5, <<EOD
+(let ([f (async (lambda ()
+                  (sleep 0.01)
+                  5))])
+  (pp "waiting for " f)
+  (wait f))
+EOD
+    end
+
+    it 'async/wait-all' do
+      verify Cons.from_array1([0.01, 0.02]), <<EOD
+(let ([fs (map (lambda (n)
+                 (async (lambda ()
+                          (sleep n)
+                          (puts "woke up")
+                          n)))
+               '(0.01 0.02))])
+  (pp "waiting for " fs)
+  (wait-all fs))
+EOD
+    end
+
+    it 'async/wait-all exception' do
+      verify RuntimeError, <<EOD
+(let ([fs (list
+           (async (lambda () (sleep 0.01) 5))
+           (async (lambda () (sleep 0.01) (raise "oops"))))])
+  (wait-all fs))
+EOD
+    end
+
     def verify(expected, code=nil)
       Pretty.print(expected)
       code ||= yield
